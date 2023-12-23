@@ -1,5 +1,9 @@
 {
     "files.associations": {
-        "shoot_task.h": "c"
+        "shoot_task.h": "c",
+        "pid.h": "c",
+        "push.h": "c",
+        "can_receive.h": "c",
+        "yaw_task.h": "c"
     }
 }

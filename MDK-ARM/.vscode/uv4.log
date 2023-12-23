@@ -1,41 +1,8 @@
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'E:\software\Keil\ARM\ARMCC\Bin'
 Build target 'ICBK_Darts'
-compiling bsp_dbus.c...
-..\BSP\bsp_dbus.c(9): warning:  #223-D: function "USART_USART_DMA_Enable" declared implicitly
-      USART_USART_DMA_Enable(&huart3, dbus_rx_buffer, 18);
-..\BSP\bsp_dbus.c(9): error:  #20: identifier "huart3" is undefined
-      USART_USART_DMA_Enable(&huart3, dbus_rx_buffer, 18);
-..\BSP\bsp_dbus.c(12): error:  #159: declaration is incompatible with previous "USART_USART_DMA_Enable"  (declared at line 9)
-  void USART_USART_DMA_Enable(UART_HandleTypeDef *huart, uint8_t *buffer_addr, uint8_t data_size)
-..\BSP\bsp_dbus.c(22): error:  #20: identifier "huart3" is undefined
-      if (__HAL_UART_GET_FLAG(&huart3, UART_FLAG_IDLE) != RESET) // 判断是否空闲中断
-..\BSP\bsp_dbus.c(38): error:  #18: expected a ")"
-      RC_Ctl.rc.s2 = ((dbus_rx_buffer[5] >> 4)5 0x0003);
-..\BSP\bsp_dbus.c: 1 warning, 4 errors
-compiling main.c...
-../Task/shoot_task.h(44): error:  #20: identifier "RC_ctl_t" is undefined
-      const RC_ctl_t *shoot_rc; // 遥控器数�?
-../Core/Src/main.c: 0 warnings, 1 error
-compiling shoot_task.c...
-..\Task\shoot_task.h(44): error:  #20: identifier "RC_ctl_t" is undefined
-      const RC_ctl_t *shoot_rc; // 遥控器数�?
-..\Task\shoot_task.c(30): error:  #20: identifier "RC_SW_MID" is undefined
-      shoot_control_data.last_switch = RC_SW_MID;
-..\Task\shoot_task.c(46): warning:  #223-D: function "switch_is_up" declared implicitly
-      if (shoot_mode_set->shoot_mode == FRIC_STOP && switch_is_up(shoot_mode_set->shoot_rc->rc.s[RC_SWITCH_LEFT]))
-..\Task\shoot_task.c(46): error:  #20: identifier "RC_SWITCH_LEFT" is undefined
-      if (shoot_mode_set->shoot_mode == FRIC_STOP && switch_is_up(shoot_mode_set->shoot_rc->rc.s[RC_SWITCH_LEFT]))
-..\Task\shoot_task.c(51): warning:  #223-D: function "switch_is_mid" declared implicitly
-      if (switch_is_mid(shoot_mode_set->shoot_rc->rc.s[RC_SWITCH_LEFT]))
-..\Task\shoot_task.c(51): error:  #20: identifier "RC_SWITCH_LEFT" is undefined
-      if (switch_is_mid(shoot_mode_set->shoot_rc->rc.s[RC_SWITCH_LEFT]))
-..\Task\shoot_task.c(56): warning:  #223-D: function "switch_is_down" declared implicitly
-      if (switch_is_down(shoot_mode_set->shoot_rc->rc.s[RC_SWITCH_LEFT]))
-..\Task\shoot_task.c(56): error:  #20: identifier "RC_SWITCH_LEFT" is undefined
-      if (switch_is_down(shoot_mode_set->shoot_rc->rc.s[RC_SWITCH_LEFT]))
-..\Task\shoot_task.c(61): error:  #20: identifier "RC_SWITCH_LEFT" is undefined
-      shoot_mode_set->last_switch = shoot_mode_set->shoot_rc->rc.s[RC_SWITCH_LEFT];
-..\Task\shoot_task.c: 3 warnings, 6 errors
-"ICBK_Darts\ICBK_Darts.axf" - 11 Error(s), 4 Warning(s).
-Target not created.
-Build Time Elapsed:  00:00:09
+compiling yaw_task.c...
+linking...
+Program Size: Code=13740 RO-data=636 RW-data=152 ZI-data=18424  
+FromELF: creating hex file...
+"ICBK_Darts\ICBK_Darts.axf" - 0 Error(s), 0 Warning(s).
+Build Time Elapsed:  00:00:04

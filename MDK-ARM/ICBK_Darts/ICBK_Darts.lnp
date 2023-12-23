@@ -37,6 +37,8 @@
 "icbk_darts\heap_4.o"
 "icbk_darts\port.o"
 "icbk_darts\shoot_task.o"
+"icbk_darts\yaw_task.o"
+"icbk_darts\check_task.o"
 "icbk_darts\can_receive.o"
 "icbk_darts\remote_control.o"
 "icbk_darts\bsp_can.o"

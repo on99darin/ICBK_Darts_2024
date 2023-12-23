@@ -10,10 +10,10 @@
 
 shoot_control_data_t shoot_control_data; // 发射机构全局数据
 
-void shoot_init(void); // 发射机构初始化
+void shoot_init(void);                                                   // 发射机构初始化
 void shoot_feedback_update(shoot_control_data_t *shoot_feedback_update); // 发射数据反馈更新
-void shoot_mode_set(shoot_control_data_t *shoot_mode_set);// 发射机构状态机设置
-void shoot_control_loop(void);//发射控制
+void shoot_mode_set(shoot_control_data_t *shoot_mode_set);               // 发射机构状态机设置
+void shoot_control_loop(void);                                           // 发射控制
 
 void shoot_init(void) // 发射机构初始化
 {
@@ -31,6 +31,8 @@ void shoot_init(void) // 发射机构初始化
 
     // 状态初始化设定
     shoot_control_data.shoot_mode = FRIC_STOP;
+
+    // 遥控器指针绑定
     shoot_control_data.shoot_rc = get_remote_control_point();
 }
 
@@ -62,9 +64,7 @@ void shoot_mode_set(shoot_control_data_t *shoot_mode_set)
         shoot_mode_set->shoot_mode = FRIC_NO_CURRENT;
     }
     // 挡位数据更新
-    shoot_mode_set->last_switch = shoot_mode_set->shoot_rc->rc.s[1
-    ];
-    //vTaskDelay(2);
+    shoot_mode_set->last_switch = shoot_mode_set->shoot_rc->rc.s[1];
 }
 // 发射控制
 void shoot_control_loop(void)
@@ -75,7 +75,8 @@ void shoot_control_loop(void)
     shoot_feedback_update(&shoot_control_data);
     if (shoot_control_data.shoot_mode == FRIC_NO_CURRENT)
     {
-        CAN_cmd_shoot(0, 0, 0, 0);
+        shoot_control_data.fric_left_given_current = 0;
+        shoot_control_data.fric_right_given_current = 0;
     }
     else
     {
@@ -92,20 +93,20 @@ void shoot_control_loop(void)
         // 摩擦轮M3508闭环计算
         shoot_control_data.fric_left_given_current = (int16_t)pid_calc(&shoot_control_data.fric_left_pid, shoot_control_data.fric_left_ref_speed, shoot_control_data.fric_set_speed);
         shoot_control_data.fric_right_given_current = (int16_t)pid_calc(&shoot_control_data.fric_right_pid, shoot_control_data.fric_right_ref_speed, shoot_control_data.fric_set_speed);
-
-        // 发送电流
-        CAN_cmd_shoot(shoot_control_data.fric_left_given_current, shoot_control_data.fric_right_given_current, 0, 0);
     }
-    // 等待接收数据刷新，避免刷新速度过快
-    vTaskDelay(2);
 }
 // task主函数
 void shoot_task()
 {
-    
-    shoot_init();      // 初始化发射机构
+
+    shoot_init(); // 初始化发射机构
     while (1)
     {
-        shoot_control_loop(); // 摩擦轮闭环
+        // 摩擦轮闭环
+        shoot_control_loop();
+        // 发送电流
+        CAN_cmd_shoot(shoot_control_data.fric_left_given_current, shoot_control_data.fric_right_given_current, 0);
+        // 等待接收数据刷新，避免刷新速度过快
+        vTaskDelay(2);
     }
 }

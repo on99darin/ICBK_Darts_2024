@@ -7,8 +7,8 @@
 #define CAN_2 hcan2
 
 /* 云台电机 ID标识 */
-#define CAN_GIMBAL_ALL_ID 0x1FF
-#define CAN_YAW_MOTOR_ID 0x205
+#define CAN_GIMBAL_ALL_ID 0x2FF
+#define CAN_YAW_MOTOR_ID 0x206
 
 /* 摩擦轮电机 ID标识 */
 #define CAN_FRIC_ALL_ID 0x200
@@ -16,8 +16,8 @@
 #define CAN_FRIC_RIGHT_ID 0x202
 
 /* 推弹电机 ID标识 */
-#define CAN_PUSH_M3508_ID 0x203
-#define CAN_PUSH_M2006_ID 0x204
+#define CAN_PUSH_MOTOR_ID 0x203
+#define CAN_TURN_MOTOR_ID 0x205
 
 // RoboMaster电机数据结构
 typedef struct
@@ -29,9 +29,9 @@ typedef struct
     int16_t last_ecd;      // 上一次机械角度
 } motor_measure_t;
 
-extern void CAN_cmd_shoot(int16_t fric_left, int16_t fric_right, int16_t push_turn, int16_t push_push); // 发送发射机构电机控制电流CAN1
+extern void CAN_cmd_shoot(int16_t fric_left, int16_t fric_right,int16_t push); // 发送发射机构电机控制电流CAN1
 
-extern void CAN_cmd_gimbal(int16_t yaw); // 发送yaw轴电机控制电流CAN2(0x205)
+extern void CAN_cmd_gimbal(int16_t yaw,int16_t turn); // 发送yaw轴、转盘电机控制电流CAN2(0x205、0x206)
 
 extern const motor_measure_t *get_right_fric_motor_measure_point(void); // 返回摩擦轮左电机 3508电机数据指针
 
@@ -39,8 +39,8 @@ extern const motor_measure_t *get_left_fric_motor_measure_point(void); // 返回
 
 extern const motor_measure_t *get_yaw_motor_measure_point(void); // 返回yaw 6020电机数据指针
 
-extern const motor_measure_t *get_push_3508_motor_measure_point(void); // 返回推弹电机 3508电机数据指针
+extern const motor_measure_t *get_turn_motor_measure_point(void); // 返回转盘电机 6020电机数据指针
 
-extern const motor_measure_t *get_push_2006_motor_measure_point(void); // 返回推弹电机 2006电机数据指针
+extern const motor_measure_t *get_push_motor_measure_point(void); // 返回推弹电机 2006电机数据指针
 
 #endif

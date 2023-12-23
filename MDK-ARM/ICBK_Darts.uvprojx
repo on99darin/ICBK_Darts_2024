@@ -1381,6 +1381,16 @@
               <FileType>1</FileType>
               <FilePath>..\Task\shoot_task.c</FilePath>
             </File>
+            <File>
+              <FileName>yaw_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Task\yaw_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>check_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Task\check_task.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
