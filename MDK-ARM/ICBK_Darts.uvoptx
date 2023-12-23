@@ -163,12 +163,17 @@
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>push_control_data</ItemText>
+          <ItemText>push_control_data,0x10</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
           <ItemText>push_turn_pos_set</ItemText>
+        </Ww>
+        <Ww>
+          <count>3</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>yaw_control_data</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

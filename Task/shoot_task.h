@@ -60,6 +60,8 @@ typedef struct
 
     int16_t fric_left_given_current;  // 给定左摩擦轮电机的电流值
     int16_t fric_right_given_current; // 给定右摩擦轮电机的电流值
+    
+    
 
     char last_switch; // 上一次的挡位
 

@@ -1,6 +1,7 @@
 #ifndef YAW_TASK_H
 #define YAW_TASK_H
 
+
 #include "yaw_task.h"
 #include "main.h"
 #include "CAN_receive.h"
@@ -11,28 +12,30 @@
 #include "bsp_rc.h"
 #include "remote_control.h"
 
+#define PI 3.14159265358979f
+
 /* 转盘速度环PID */
-#define TURN_SPEED_KP 0.0f;
-#define TURN_SPEED_KI 0.0f;
-#define TURN_SPEED_KD 0.0f;
-#define TURN_SPEED_MAX_OUT 0.0f;
-#define TURN_SPEED_MAX_IOUT 0.0f;
+#define TURN_SPEED_KP 30.0f
+#define TURN_SPEED_KI 0.0f
+#define TURN_SPEED_KD 0.0f
+#define TURN_SPEED_MAX_OUT 10000.0f
+#define TURN_SPEED_MAX_IOUT 100.0f
 
 /* 转盘角度环PID */
-#define TURN_POSITION_KP 0.0f;
-#define TURN_POSITION_KI 0.0f;
-#define TURN_POSITION_KD 0.0f;
-#define TURN_POSITION_MAX_OUT 0.0f;
-#define TURN_POSITION_MAX_IOUT 0.0f;
+#define TURN_POSITION_KP 400.0f
+#define TURN_POSITION_KI 0.0f
+#define TURN_POSITION_KD 0.0f
+#define TURN_POSITION_MAX_OUT 100.0f
+#define TURN_POSITION_MAX_IOUT 320.0f
 
 /* yaw速度环PID */
-#define YAW_SPEED_KP 0.0f;
-#define YAW_SPEED_KI 0.0f;
-#define YAW_SPEED_KD 0.0f;
+#define YAW_SPEED_KP 0.0f
+#define YAW_SPEED_KI 0.0f
+#define YAW_SPEED_KD 0.0f
 /* yaw角度环PID */
-#define YAW_POSITION_KP 0.0f;
-#define YAW_POSITION_KI 0.0f;
-#define YAW_POSITION_KD 0.0f;
+#define YAW_POSITION_KP 0.0f
+#define YAW_POSITION_KI 0.0f
+#define YAW_POSITION_KD 0.0f
 
 typedef struct
 {
@@ -46,6 +49,8 @@ typedef struct
     fp32 turn_motor_ref_angle;        // 转盘电机反馈换算后的角度
     fp32 turn_inner_out;              // 转盘内环（角度环）PID计算值
     int16_t turn_motor_given_current; // 给定转盘电机的电流值
+    
+    fp32 turn_target_angle;
 
 } yaw_control_data_t;
 

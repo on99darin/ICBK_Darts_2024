@@ -7,8 +7,8 @@
 #define CAN_2 hcan2
 
 /* 云台电机 ID标识 */
-#define CAN_GIMBAL_ALL_ID 0x2FF
-#define CAN_YAW_MOTOR_ID 0x206
+#define CAN_GIMBAL_ALL_ID 0x2FE
+#define CAN_YAW_MOTOR_ID 0x2046
 
 /* 摩擦轮电机 ID标识 */
 #define CAN_FRIC_ALL_ID 0x200
@@ -17,7 +17,7 @@
 
 /* 推弹电机 ID标识 */
 #define CAN_PUSH_MOTOR_ID 0x203
-#define CAN_TURN_MOTOR_ID 0x205
+#define CAN_TURN_MOTOR_ID 0x209
 
 // RoboMaster电机数据结构
 typedef struct
