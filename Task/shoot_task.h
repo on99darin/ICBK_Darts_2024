@@ -19,15 +19,22 @@
 #define FRIC_LEFT_SPEED_KP 6500.0f
 #define FRIC_LEFT_SPEED_KI 150.0f
 #define FRIC_LEFT_SPEED_KD 0.0f
-#define FRIC_LEFT_SPEED_PID_MAX_OUT 36000.0f
-#define FRIC_LEFT_SPEED_PID_MAX_IOUT 500.0f
+#define FRIC_LEFT_SPEED_MAX_OUT 36000.0f
+#define FRIC_LEFT_SPEED_MAX_IOUT 500.0f
 
 /* 右边摩擦轮电机速度PID */
 #define FRIC_RIGHT_SPEED_KP 6500.0f
 #define FRIC_RIGHT_SPEED_KI 150.0f
 #define FRIC_RIGHT_SPEED_KD 0.0f
-#define FRIC_RIGHT_SPEED_PID_MAX_OUT 36000.0f
-#define FRIC_RIGHT_SPEED_PID_MAX_IOUT 500.0f
+#define FRIC_RIGHT_SPEED_MAX_OUT 36000.0f
+#define FRIC_RIGHT_SPEED_MAX_IOUT 500.0f
+
+/* 右边摩擦轮电机速度PID */
+#define PUSH_SPEED_KP 6500.0f
+#define PUSH_SPEED_KI 150.0f
+#define PUSH_SPEED_KD 0.0f
+#define PUSH_SPEED_MAX_OUT 10000.0f
+#define PUSH_SPEED_MAX_IOUT 500.0f
 
 void shoot_task(void);
 
@@ -53,15 +60,18 @@ typedef struct
 
     pid_data_t fric_left_pid;  // 左摩擦轮速度环PID
     pid_data_t fric_right_pid; // 右摩擦轮速度环PID
+    pid_data_t push_motor_pid; // 推弹电机速度环PID
 
-    fp32 fric_set_speed;       // 摩擦轮预定线速度
-    fp32 fric_left_ref_speed;  // 左摩擦轮反馈的线速度
-    fp32 fric_right_ref_speed; // 右摩擦轮反馈的线速度
+    fp32 fric_set_speed; // 摩擦轮预定速度
+    fp32 push_set_speed; // 推弹预定速度
+
+    fp32 fric_left_ref_speed;  // 左摩擦轮反馈的速度
+    fp32 fric_right_ref_speed; // 右摩擦轮反馈的速度
+    fp32 push_motor_ref_speed; // 推弹电机反馈的速度
 
     int16_t fric_left_given_current;  // 给定左摩擦轮电机的电流值
     int16_t fric_right_given_current; // 给定右摩擦轮电机的电流值
-    
-    
+    int16_t push_motor_given_current; // 给定右摩擦轮电机的电流值
 
     char last_switch; // 上一次的挡位
 

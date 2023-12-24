@@ -8,7 +8,7 @@
 
 /* 云台电机 ID标识 */
 #define CAN_GIMBAL_ALL_ID 0x2FE
-#define CAN_YAW_MOTOR_ID 0x2046
+#define CAN_YAW_MOTOR_ID 0x210 // attention：实则电机ID为6，该处为报文标识符
 
 /* 摩擦轮电机 ID标识 */
 #define CAN_FRIC_ALL_ID 0x200
@@ -17,7 +17,7 @@
 
 /* 推弹电机 ID标识 */
 #define CAN_PUSH_MOTOR_ID 0x203
-#define CAN_TURN_MOTOR_ID 0x209
+#define CAN_TURN_MOTOR_ID 0x209 // attention：实则电机ID为5，该处为报文标识符
 
 // RoboMaster电机数据结构
 typedef struct
@@ -29,9 +29,9 @@ typedef struct
     int16_t last_ecd;      // 上一次机械角度
 } motor_measure_t;
 
-extern void CAN_cmd_shoot(int16_t fric_left, int16_t fric_right,int16_t push); // 发送发射机构电机控制电流CAN1
+extern void CAN_cmd_shoot(int16_t fric_left, int16_t fric_right, int16_t push); // 发送发射机构电机控制电流CAN1
 
-extern void CAN_cmd_gimbal(int16_t yaw,int16_t turn); // 发送yaw轴、转盘电机控制电流CAN2(0x205、0x206)
+extern void CAN_cmd_gimbal(int16_t yaw, int16_t turn); // 发送yaw轴、转盘电机控制电流CAN2(0x205、0x206)
 
 extern const motor_measure_t *get_right_fric_motor_measure_point(void); // 返回摩擦轮左电机 3508电机数据指针
 

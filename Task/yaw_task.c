@@ -51,6 +51,7 @@ void yaw_feedback_update(yaw_control_data_t *yaw_feedback_update)
 {
     // 设定目标角度
     yaw_control_data.turn_target_angle = PI / 2;
+    yaw_control_data.yaw_target_angle = PI / 2;
     // 角度当前位映射换算更新
     yaw_control_data.turn_motor_ref_angle = msp(yaw_control_data.turn_motor_measure->ecd, 0, 8191, -PI, PI);
     yaw_control_data.yaw_motor_ref_angle = msp(yaw_control_data.yaw_motor_measure->ecd, 0, 8191, -PI, PI);
@@ -80,7 +81,8 @@ void yaw_task()
         // 控制计算
         yaw_control_loop();
         // 发送电流
-        CAN_cmd_gimbal(yaw_control_data.turn_motor_given_current, 0);
+        CAN_cmd_gimbal(yaw_control_data.turn_motor_given_current, yaw_control_data.yaw_motor_given_current);
+
         vTaskDelay(2);
     }
 }

@@ -22,8 +22,8 @@ void shoot_init(void) // 发射机构初始化
     const fp32 fric_right_speed_pid[3] = {FRIC_RIGHT_SPEED_KP, FRIC_RIGHT_SPEED_KI, FRIC_RIGHT_SPEED_KD};
 
     // 摩擦轮速度环PID初始化
-    pid_init(&shoot_control_data.fric_left_pid, fric_left_speed_pid, FRIC_LEFT_SPEED_PID_MAX_OUT, FRIC_LEFT_SPEED_PID_MAX_IOUT);
-    pid_init(&shoot_control_data.fric_right_pid, fric_right_speed_pid, FRIC_RIGHT_SPEED_PID_MAX_OUT, FRIC_RIGHT_SPEED_PID_MAX_IOUT);
+    pid_init(&shoot_control_data.fric_left_pid, fric_left_speed_pid, FRIC_LEFT_SPEED_MAX_OUT, FRIC_LEFT_SPEED_MAX_IOUT);
+    pid_init(&shoot_control_data.fric_right_pid, fric_right_speed_pid, FRIC_RIGHT_SPEED_MAX_OUT, FRIC_RIGHT_SPEED_MAX_IOUT);
 
     // 摩擦轮电机数据指针绑定
     shoot_control_data.shoot_fric_left_motor = get_left_fric_motor_measure_point();
