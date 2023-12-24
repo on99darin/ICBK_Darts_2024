@@ -1,0 +1,15 @@
+icbk_darts\queue.o: ../Middlewares/Third_Party/FreeRTOS/Source/queue.c
+icbk_darts\queue.o: E:\software\Keil\ARM\ARMCC\Bin\..\include\stdlib.h
+icbk_darts\queue.o: E:\software\Keil\ARM\ARMCC\Bin\..\include\string.h
+icbk_darts\queue.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
+icbk_darts\queue.o: E:\software\Keil\ARM\ARMCC\Bin\..\include\stddef.h
+icbk_darts\queue.o: E:\software\Keil\ARM\ARMCC\Bin\..\include\stdint.h
+icbk_darts\queue.o: ../Core/Inc/FreeRTOSConfig.h
+icbk_darts\queue.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
+icbk_darts\queue.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
+icbk_darts\queue.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
+icbk_darts\queue.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
+icbk_darts\queue.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
+icbk_darts\queue.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
+icbk_darts\queue.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
+icbk_darts\queue.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h

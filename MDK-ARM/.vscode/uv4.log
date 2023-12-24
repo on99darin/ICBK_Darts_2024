@@ -1,114 +1,50 @@
-*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'E:\software\Keil\ARM\ARMCC\Bin'
-Build target 'ICBK_Darts'
-assembling startup_stm32f407xx.s...
-compiling gpio.c...
-compiling freertos.c...
-compiling main.c...
-compiling can.c...
-compiling dma.c...
-compiling usart.c...
-compiling stm32f4xx_hal_msp.c...
-compiling stm32f4xx_hal_can.c...
-compiling stm32f4xx_it.c...
-compiling stm32f4xx_hal_flash.c...
-compiling stm32f4xx_hal_rcc_ex.c...
-compiling stm32f4xx_hal_rcc.c...
-compiling stm32f4xx_hal_flash_ramfunc.c...
-compiling stm32f4xx_hal_flash_ex.c...
-compiling stm32f4xx_hal_gpio.c...
-compiling stm32f4xx_hal_dma.c...
-compiling stm32f4xx_hal_pwr.c...
-compiling stm32f4xx_hal_dma_ex.c...
-compiling stm32f4xx_hal_cortex.c...
-compiling stm32f4xx_hal.c...
-compiling stm32f4xx_hal_pwr_ex.c...
-compiling stm32f4xx_hal_tim_ex.c...
-compiling stm32f4xx_hal_exti.c...
-compiling stm32f4xx_hal_tim.c...
-compiling croutine.c...
-compiling event_groups.c...
-compiling list.c...
-compiling queue.c...
-compiling stream_buffer.c...
-compiling tasks.c...
-compiling timers.c...
-compiling cmsis_os.c...
-compiling heap_4.c...
-compiling port.c...
-compiling system_stm32f4xx.c...
-compiling stm32f4xx_hal_uart.c...
-compiling check_task.c...
-compiling shoot_task.c...
-compiling CAN_receive.c...
-compiling yaw_task.c...
-..\Task\yaw_task.c(25): error:  #67: expected a "}"
-      const fp32 push_turn_position_pid[3] = {TURN_POSITION_KP, TURN_POSITION_KI, TURN_POSITION_KD};
-..\Task\yaw_task.c(25): error:  #29: expected an expression
-      const fp32 push_turn_position_pid[3] = {TURN_POSITION_KP, TURN_POSITION_KI, TURN_POSITION_KD};
-..\Task\yaw_task.c(25): error:  #29: expected an expression
-      const fp32 push_turn_position_pid[3] = {TURN_POSITION_KP, TURN_POSITION_KI, TURN_POSITION_KD};
-..\Task\yaw_task.c(25): warning:  #177-D: variable "push_turn_position_pid"  was declared but never referenced
-      const fp32 push_turn_position_pid[3] = {TURN_POSITION_KP, TURN_POSITION_KI, TURN_POSITION_KD};
-..\Task\yaw_task.c(26): error:  #67: expected a "}"
-      const fp32 push_turn_speed_pid[3] = {TURN_SPEED_KP, TURN_SPEED_KI, TURN_SPEED_KD};
-..\Task\yaw_task.c(26): error:  #169: expected a declaration
-      const fp32 push_turn_speed_pid[3] = {TURN_SPEED_KP, TURN_SPEED_KI, TURN_SPEED_KD};
-..\Task\yaw_task.c(26): error:  #169: expected a declaration
-      const fp32 push_turn_speed_pid[3] = {TURN_SPEED_KP, TURN_SPEED_KI, TURN_SPEED_KD};
-..\Task\yaw_task.c(26): error:  #169: expected a declaration
-      const fp32 push_turn_speed_pid[3] = {TURN_SPEED_KP, TURN_SPEED_KI, TURN_SPEED_KD};
-..\Task\yaw_task.c(28): error:  #79: expected a type specifier
-      pid_init(&yaw_control_data.turn_position_pid, push_turn_position_pid, TURN_POSITION_KP, TURN_POSITION_KI, TURN_POSITION_KD);
-..\Task\yaw_task.c(28): error:  #20: identifier "push_turn_position_pid" is undefined
-      pid_init(&yaw_control_data.turn_position_pid, push_turn_position_pid, TURN_POSITION_KP, TURN_POSITION_KI, TURN_POSITION_KD);
-..\Task\yaw_task.c(28): error:  #79: expected a type specifier
-      pid_init(&yaw_control_data.turn_position_pid, push_turn_position_pid, TURN_POSITION_KP, TURN_POSITION_KI, TURN_POSITION_KD);
-..\Task\yaw_task.c(28): error:  #18: expected a ")"
-      pid_init(&yaw_control_data.turn_position_pid, push_turn_position_pid, TURN_POSITION_KP, TURN_POSITION_KI, TURN_POSITION_KD);
-..\Task\yaw_task.c(28): error:  #260-D: explicit type is missing ("int" assumed)
-      pid_init(&yaw_control_data.turn_position_pid, push_turn_position_pid, TURN_POSITION_KP, TURN_POSITION_KI, TURN_POSITION_KD);
-..\Task\yaw_task.c(28): error:  #147: declaration is incompatible with "void pid_init(pid_data_t *, const float *, float, float)"  (declared at line 30 of "../Component/Algorithm/pid.h")
-      pid_init(&yaw_control_data.turn_position_pid, push_turn_position_pid, TURN_POSITION_KP, TURN_POSITION_KI, TURN_POSITION_KD);
-..\Task\yaw_task.c(28): error:  #169: expected a declaration
-      pid_init(&yaw_control_data.turn_position_pid, push_turn_position_pid, TURN_POSITION_KP, TURN_POSITION_KI, TURN_POSITION_KD);
-..\Task\yaw_task.c(28): error:  #169: expected a declaration
-      pid_init(&yaw_control_data.turn_position_pid, push_turn_position_pid, TURN_POSITION_KP, TURN_POSITION_KI, TURN_POSITION_KD);
-..\Task\yaw_task.c(28): error:  #169: expected a declaration
-      pid_init(&yaw_control_data.turn_position_pid, push_turn_position_pid, TURN_POSITION_KP, TURN_POSITION_KI, TURN_POSITION_KD);
-..\Task\yaw_task.c(29): error:  #79: expected a type specifier
-      pid_init(&yaw_control_data.turn_speed_pid, push_turn_speed_pid, TURN_SPEED_MAX_OUT, TURN_SPEED_MAX_IOUT);
-..\Task\yaw_task.c(29): error:  #757: variable "push_turn_speed_pid"  is not a type name
-      pid_init(&yaw_control_data.turn_speed_pid, push_turn_speed_pid, TURN_SPEED_MAX_OUT, TURN_SPEED_MAX_IOUT);
-..\Task\yaw_task.c(29): error:  #79: expected a type specifier
-      pid_init(&yaw_control_data.turn_speed_pid, push_turn_speed_pid, TURN_SPEED_MAX_OUT, TURN_SPEED_MAX_IOUT);
-..\Task\yaw_task.c(29): error:  #18: expected a ")"
-      pid_init(&yaw_control_data.turn_speed_pid, push_turn_speed_pid, TURN_SPEED_MAX_OUT, TURN_SPEED_MAX_IOUT);
-..\Task\yaw_task.c(29): error:  #260-D: explicit type is missing ("int" assumed)
-      pid_init(&yaw_control_data.turn_speed_pid, push_turn_speed_pid, TURN_SPEED_MAX_OUT, TURN_SPEED_MAX_IOUT);
-..\Task\yaw_task.c(29): error:  #169: expected a declaration
-      pid_init(&yaw_control_data.turn_speed_pid, push_turn_speed_pid, TURN_SPEED_MAX_OUT, TURN_SPEED_MAX_IOUT);
-..\Task\yaw_task.c(29): error:  #169: expected a declaration
-      pid_init(&yaw_control_data.turn_speed_pid, push_turn_speed_pid, TURN_SPEED_MAX_OUT, TURN_SPEED_MAX_IOUT);
-..\Task\yaw_task.c(31): error:  #77-D: this declaration has no storage class or type specifier
-      yaw_control_data.turn_motor_measure = get_turn_motor_measure_point();
-..\Task\yaw_task.c(31): error:  #147: declaration is incompatible with "yaw_control_data_t yaw_control_data"  (declared at line 11)
-      yaw_control_data.turn_motor_measure = get_turn_motor_measure_point();
-..\Task\yaw_task.c(31): error:  #65: expected a ";"
-      yaw_control_data.turn_motor_measure = get_turn_motor_measure_point();
-..\Task\yaw_task.c(33): error:  #77-D: this declaration has no storage class or type specifier
-      yaw_control_data.yaw_rc = get_remote_control_point();
-..\Task\yaw_task.c(33): error:  #147: declaration is incompatible with "yaw_control_data_t yaw_control_data"  (declared at line 31)
-      yaw_control_data.yaw_rc = get_remote_control_point();
-..\Task\yaw_task.c(33): error:  #65: expected a ";"
-      yaw_control_data.yaw_rc = get_remote_control_point();
-..\Task\yaw_task.c(34): error:  #169: expected a declaration
-  }
-..\Task\yaw_task.c: 1 warning, 30 errors
-compiling remote_control.c...
-compiling bsp_can.c...
-compiling bsp_rc.c...
-compiling user_lib.c...
-compiling pid.c...
-"ICBK_Darts\ICBK_Darts.axf" - 30 Error(s), 1 Warning(s).
-Target not created.
-Build Time Elapsed:  00:01:18
+Load "ICBK_Darts\\ICBK_Darts.axf" 
+Set JLink Project File to "e:\Code\ICBK_Darts\ICBK_Darts\MDK-ARM\JLinkSettings.ini"* JLink Info: Device "STM32F407IG" selected.
+
+JLink info:
+------------
+DLL: V7.22b, compiled Jun 17 2021 17:22:49
+Firmware: J-Link ARM-OB STM32 compiled Aug 22 2012 19:52:04
+Hardware: V7.00
+S/N : 20090928 
+Feature(s) : RDI,FlashDL,FlashBP,JFlash,GDB 
+
+* JLink Info: InitTarget() start
+* JLink Info: InitTarget() end
+* JLink Info: Found SW-DP with ID 0x2BA01477
+* JLink Info: DPv0 detected
+* JLink Info: Scanning AP map to find all available APs
+* JLink Info: AP[1]: Stopped AP scan as end of AP map has been reached
+* JLink Info: AP[0]: AHB-AP (IDR: 0x24770011)
+* JLink Info: Iterating through AP map to find AHB-AP to use
+* JLink Info: AP[0]: Core found
+* JLink Info: AP[0]: AHB-AP ROM base: 0xE00FF000
+* JLink Info: CPUID register: 0x410FC241. Implementer code: 0x41 (ARM)
+* JLink Info: Found Cortex-M4 r0p1, Little endian.
+* JLink Info: FPUnit: 6 code (BP) slots and 2 literal slots
+* JLink Info: CoreSight components:
+* JLink Info: ROMTbl[0] @ E00FF000
+* JLink Info: ROMTbl[0][0]: E000E000, CID: B105E00D, PID: 000BB00C SCS-M7
+* JLink Info: ROMTbl[0][1]: E0001000, CID: B105E00D, PID: 003BB002 DWT
+* JLink Info: ROMTbl[0][2]: E0002000, CID: B105E00D, PID: 002BB003 FPB
+* JLink Info: ROMTbl[0][3]: E0000000, CID: B105E00D, PID: 003BB001 ITM
+* JLink Info: ROMTbl[0][4]: E0040000, CID: B105900D, PID: 000BB9A1 TPIU
+* JLink Info: ROMTbl[0][5]: E0041000, CID: B105900D, PID: 000BB925 ETM
+ROMTableAddr = 0xE00FF000
+* JLink Info: Reset: Halt core after reset via DEMCR.VC_CORERESET.
+* JLink Info: Reset: Reset device via AIRCR.SYSRESETREQ.
+
+Target info:
+------------
+Device: STM32F407IGHx
+VTarget = 3.300V
+State of Pins: TCK: 0, TDI: 0, TDO: 1, TMS: 0, TRES: 1, TRST: 1
+Hardware-Breakpoints: 6
+Software-Breakpoints: 8192
+Watchpoints:          4
+JTAG speed: 4000 kHz
+
+Erase Done.Programming Done.Verify OK.* JLink Info: Reset: Halt core after reset via DEMCR.VC_CORERESET.
+* JLink Info: Reset: Reset device via AIRCR.SYSRESETREQ.
+Application running ...
+Flash Load finished at 17:25:12
