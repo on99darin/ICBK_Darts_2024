@@ -57,6 +57,7 @@ typedef struct
 
     const motor_measure_t *shoot_fric_left_motor;  // 左摩擦轮电机数据
     const motor_measure_t *shoot_fric_right_motor; // 右摩擦轮电机数据
+    const motor_measure_t *push_motor;             // 推弹电机数据
 
     pid_data_t fric_left_pid;  // 左摩擦轮速度环PID
     pid_data_t fric_right_pid; // 右摩擦轮速度环PID

@@ -35,8 +35,8 @@ void yaw_init(void)
     pid_init(&yaw_control_data.turn_speed_pid, push_turn_speed_pid, TURN_SPEED_MAX_OUT, TURN_SPEED_MAX_IOUT);
 
     /* 转盘PID初始化 */
-    pid_init(&yaw_control_data.turn_position_pid, yaw_position_pid, YAW_POSITION_MAX_OUT, YAW_POSITION_MAX_IOUT);
-    pid_init(&yaw_control_data.turn_speed_pid, yaw_speed_pid, YAW_SPEED_MAX_OUT, YAW_SPEED_MAX_IOUT);
+    pid_init(&yaw_control_data.turn_position_pid, gimbal_yaw_position_pid, YAW_POSITION_MAX_OUT, YAW_POSITION_MAX_IOUT);
+    pid_init(&yaw_control_data.turn_speed_pid, gimbal_yaw_speed_pid, YAW_SPEED_MAX_OUT, YAW_SPEED_MAX_IOUT);
 
     // 转盘电机数据指针绑定
     yaw_control_data.turn_motor_measure = get_turn_motor_measure_point();
@@ -77,11 +77,11 @@ void yaw_task()
     while (1)
     {
         // 数据更新
-        yaw_feedback_update(&yaw_control_data);
+        //yaw_feedback_update(&yaw_control_data);
         // 控制计算
-        yaw_control_loop();
+        //yaw_control_loop();
         // 发送电流
-        CAN_cmd_gimbal(yaw_control_data.turn_motor_given_current, yaw_control_data.yaw_motor_given_current);
+        CAN_cmd_gimbal(4000, yaw_control_data.yaw_motor_given_current);
 
         vTaskDelay(2);
     }

@@ -37,8 +37,8 @@
 #define YAW_POSITION_KP 0.0f
 #define YAW_POSITION_KI 0.0f
 #define YAW_POSITION_KD 0.0f
-#define YAW_SPEED_MAX_OUT 0.0f
-#define YAW_SPEED_MAX_IOUT 0.0f
+#define YAW_POSITION_MAX_OUT 0.0f
+#define YAW_POSITION_MAX_IOUT 0.0f
 
 typedef struct
 {
