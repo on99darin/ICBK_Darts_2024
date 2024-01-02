@@ -7,7 +7,7 @@
 #define CAN_2 hcan2
 
 /* 云台电机 ID标识 */
-#define CAN_GIMBAL_ALL_ID 0x2FE // 标识符为0x2FF发送电压，0x2FE发送电流
+#define CAN_GIMBAL_ALL_ID 0x2FF // 标识符为0x2FF发送电压，0x2FE发送电流
 #define CAN_YAW_MOTOR_ID 0x210  // attention：实则电机ID为6，该处为报文标识符
 
 /* 摩擦轮电机 ID标识 */

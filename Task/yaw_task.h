@@ -14,18 +14,21 @@
 #define PI 3.14159265358979f
 
 /* 转盘速度环PID */
-#define TURN_SPEED_KP 30.0f
-#define TURN_SPEED_KI 1.0f
+#define TURN_SPEED_KP 60.0f
+#define TURN_SPEED_KI 0.0f
 #define TURN_SPEED_KD 0.0f
-#define TURN_SPEED_MAX_OUT 10000.0f
-#define TURN_SPEED_MAX_IOUT 80.0f
+#define TURN_SPEED_MAX_OUT 20000.0f
+#define TURN_SPEED_MAX_IOUT 3000.0f
 
 /* 转盘角度环PID */
-#define TURN_POSITION_KP 200.0f
+#define TURN_POSITION_KP 500.0f
 #define TURN_POSITION_KI 0.0f
-#define TURN_POSITION_KD 10.0f
-#define TURN_POSITION_MAX_OUT 100.0f
-#define TURN_POSITION_MAX_IOUT 200.0f
+#define TURN_POSITION_KD 0.0f
+#define TURN_POSITION_MAX_OUT 320.0f
+#define TURN_POSITION_MAX_IOUT 0.0f
+
+/* 转盘初始位ECD */
+#define TURN_INIT_ECD 0
 
 /* yaw速度环PID */
 #define YAW_SPEED_KP 0.0f
@@ -33,6 +36,7 @@
 #define YAW_SPEED_KD 0.0f
 #define YAW_SPEED_MAX_OUT 0.0f
 #define YAW_SPEED_MAX_IOUT 0.0f
+
 /* yaw角度环PID */
 #define YAW_POSITION_KP 0.0f
 #define YAW_POSITION_KI 0.0f
@@ -40,9 +44,18 @@
 #define YAW_POSITION_MAX_OUT 0.0f
 #define YAW_POSITION_MAX_IOUT 0.0f
 
+// 状态模式列表
+typedef enum
+{
+    TURN_READY,       // 准备转状态
+    TURN_GO,    // 开转
+    TURN_OVER//转完
+} yaw_control_mode_e;
+
 typedef struct
 {
     const RC_ctrl_t *yaw_rc; // 遥控器数据
+    yaw_control_mode_e yaw_mode;//状态机
 
     const motor_measure_t *turn_motor_measure; // 转盘电机数据
     const motor_measure_t *yaw_motor_measure;  // YAW电机数据
