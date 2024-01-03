@@ -8,7 +8,8 @@
 #include "bsp_rc.h"
 #include "remote_control.h"
 
-#define FRIC_STOP_SPEED 0.0f    // 摩擦轮停止速度
+#define FRIC_STOP_SPEED 0.0f // 摩擦轮停止速度
+#define PUSH_STOP_SPEED 0.0f
 #define FRIC_TARGGET_SPEED 2.0f // 设定摩擦轮的线速度 m/s
 
 /* 摩擦轮角速度到线速度的转换率 = 摩擦轮半径(m) / 60
@@ -30,11 +31,11 @@
 #define FRIC_RIGHT_SPEED_MAX_IOUT 500.0f
 
 /* 推杆电机速度PID */
-#define PUSH_SPEED_KP 6500.0f
-#define PUSH_SPEED_KI 150.0f
+#define PUSH_SPEED_KP 10.0
+#define PUSH_SPEED_KI 0.0f
 #define PUSH_SPEED_KD 0.0f
 #define PUSH_SPEED_MAX_OUT 10000.0f
-#define PUSH_SPEED_MAX_IOUT 500.0f
+#define PUSH_SPEED_MAX_IOUT 50.0f
 
 void shoot_task(void);
 
@@ -44,8 +45,8 @@ typedef enum
     FRIC_STOP,       // 摩擦轮停止状态
     FRIC_RUN,        // 摩擦轮开启状态
     FRIC_NO_CURRENT, // 摩擦轮无力状态
+    READY_TO_TURN    // 摩擦轮准备就绪
 
-    READY_TO_TURN // 摩擦轮准备就绪
 } shoot_control_mode_e;
 
 // 发射机构数据结构体
@@ -73,6 +74,8 @@ typedef struct
     int16_t fric_left_given_current;  // 给定左摩擦轮电机的电流值
     int16_t fric_right_given_current; // 给定右摩擦轮电机的电流值
     int16_t push_motor_given_current; // 给定右摩擦轮电机的电流值
+
+    int16_t push_get_rc_speed; // 存放遥控器给推杆速度的数据
 
     char last_switch; // 上一次的挡位
 

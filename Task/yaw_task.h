@@ -47,15 +47,16 @@
 // 状态模式列表
 typedef enum
 {
-    TURN_READY,       // 准备转状态
+    TURN_READY, // 准备转状态
     TURN_GO,    // 开转
-    TURN_OVER//转完
+    TURN_OVER,  // 转完
+    YAW_UNLOCK  // 解锁YAW轴
 } yaw_control_mode_e;
 
 typedef struct
 {
-    const RC_ctrl_t *yaw_rc; // 遥控器数据
-    yaw_control_mode_e yaw_mode;//状态机
+    const RC_ctrl_t *yaw_rc;     // 遥控器数据
+    yaw_control_mode_e yaw_mode; // 状态机
 
     const motor_measure_t *turn_motor_measure; // 转盘电机数据
     const motor_measure_t *yaw_motor_measure;  // YAW电机数据

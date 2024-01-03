@@ -20,6 +20,7 @@ void shoot_init(void) // 发射机构初始化
     // 摩擦轮速度环PID参数
     const fp32 fric_left_speed_pid[3] = {FRIC_LEFT_SPEED_KP, FRIC_LEFT_SPEED_KI, FRIC_LEFT_SPEED_KD};
     const fp32 fric_right_speed_pid[3] = {FRIC_RIGHT_SPEED_KP, FRIC_RIGHT_SPEED_KI, FRIC_RIGHT_SPEED_KD};
+    // 推杆电机PID参数
     const fp32 push_motor_speed_pid[3] = {PUSH_SPEED_KP, PUSH_SPEED_KI, PUSH_SPEED_KD};
 
     // 摩擦轮速度环PID初始化
@@ -49,6 +50,8 @@ void shoot_feedback_update(shoot_control_data_t *shoot_feedback_update)
     shoot_feedback_update->fric_right_ref_speed = shoot_control_data.shoot_fric_right_motor->speed_rpm * (-FRIC_M3508_RATE_OF_ANGULAR_VELOCITY_TO_LINEAR_VELOCITY);
     // 推杆电机转子速度更新
     shoot_feedback_update->push_motor_ref_speed = shoot_control_data.push_motor->speed_rpm;
+    // 推杆--遥控器速度数据更新
+    shoot_feedback_update->push_get_rc_speed = shoot_control_data.shoot_rc->rc.ch[3];
 }
 
 // 发射机构状态机设置
@@ -85,20 +88,25 @@ void shoot_control_loop(void)
         shoot_control_data.fric_right_given_current = 0;
     }
     else
-    {
+    { /* 状态机为摩擦轮停止时，摩擦轮停止，推杆停止 */
         if (shoot_control_data.shoot_mode == FRIC_STOP)
         {
             shoot_control_data.fric_set_speed = FRIC_STOP_SPEED;
+            shoot_control_data.push_set_speed = PUSH_STOP_SPEED;
         }
-
+        /* 状态机为摩擦轮运行时，摩擦轮运行，左边4通道推杆控制2006速度 */
         if (shoot_control_data.shoot_mode == FRIC_RUN)
         {
             // 摩擦轮的速度设定
             shoot_control_data.fric_set_speed = FRIC_TARGGET_SPEED;
+            // 推杆电机的速度设定
+            shoot_control_data.push_set_speed = (shoot_control_data.push_get_rc_speed * 6); // 推杆范围[-660,660],乘系数变推杆最大速度，M2006转速范围约[-8000,8000]
         }
         // 摩擦轮M3508闭环计算
         shoot_control_data.fric_left_given_current = (int16_t)pid_calc(&shoot_control_data.fric_left_pid, shoot_control_data.fric_left_ref_speed, shoot_control_data.fric_set_speed);
         shoot_control_data.fric_right_given_current = (int16_t)pid_calc(&shoot_control_data.fric_right_pid, shoot_control_data.fric_right_ref_speed, shoot_control_data.fric_set_speed);
+        // 推杆M2006闭环计算
+        shoot_control_data.push_motor_given_current = (int16_t)pid_calc(&shoot_control_data.push_motor_pid, shoot_control_data.push_motor_ref_speed, shoot_control_data.push_set_speed);
     }
 }
 // task主函数
@@ -111,7 +119,7 @@ void shoot_task()
         // 摩擦轮闭环
         shoot_control_loop();
         // 发送电流
-        CAN_cmd_shoot(shoot_control_data.fric_left_given_current, shoot_control_data.fric_right_given_current, 0);
+        CAN_cmd_shoot(shoot_control_data.fric_left_given_current, shoot_control_data.fric_right_given_current, shoot_control_data.push_motor_given_current);
         // 等待接收数据刷新，避免刷新速度过快
         vTaskDelay(2);
     }
