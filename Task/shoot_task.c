@@ -25,11 +25,13 @@ void shoot_init(void) // 发射机构初始化
     // 摩擦轮速度环PID初始化
     pid_init(&shoot_control_data.fric_left_pid, fric_left_speed_pid, FRIC_LEFT_SPEED_MAX_OUT, FRIC_LEFT_SPEED_MAX_IOUT);
     pid_init(&shoot_control_data.fric_right_pid, fric_right_speed_pid, FRIC_RIGHT_SPEED_MAX_OUT, FRIC_RIGHT_SPEED_MAX_IOUT);
+    // 推杆速度环PID初始化
     pid_init(&shoot_control_data.push_motor_pid, push_motor_speed_pid, PUSH_SPEED_MAX_OUT, PUSH_SPEED_MAX_IOUT);
 
     // 摩擦轮电机数据指针绑定
     shoot_control_data.shoot_fric_left_motor = get_left_fric_motor_measure_point();
     shoot_control_data.shoot_fric_right_motor = get_right_fric_motor_measure_point();
+    // 推杆电机数据指针绑定
     shoot_control_data.push_motor = get_push_motor_measure_point();
 
     // 状态初始化设定
@@ -42,10 +44,10 @@ void shoot_init(void) // 发射机构初始化
 // 发射数据反馈更新
 void shoot_feedback_update(shoot_control_data_t *shoot_feedback_update)
 {
-    // 摩擦轮转速更新
     // 摩擦轮线速度更新
     shoot_feedback_update->fric_left_ref_speed = shoot_control_data.shoot_fric_left_motor->speed_rpm * FRIC_M3508_RATE_OF_ANGULAR_VELOCITY_TO_LINEAR_VELOCITY;
     shoot_feedback_update->fric_right_ref_speed = shoot_control_data.shoot_fric_right_motor->speed_rpm * (-FRIC_M3508_RATE_OF_ANGULAR_VELOCITY_TO_LINEAR_VELOCITY);
+    // 推杆电机转子速度更新
     shoot_feedback_update->push_motor_ref_speed = shoot_control_data.push_motor->speed_rpm;
 }
 

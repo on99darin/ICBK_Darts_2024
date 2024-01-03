@@ -29,7 +29,7 @@
 #define FRIC_RIGHT_SPEED_MAX_OUT 36000.0f
 #define FRIC_RIGHT_SPEED_MAX_IOUT 500.0f
 
-/* 右边摩擦轮电机速度PID */
+/* 推杆电机速度PID */
 #define PUSH_SPEED_KP 6500.0f
 #define PUSH_SPEED_KI 150.0f
 #define PUSH_SPEED_KD 0.0f

@@ -31,11 +31,15 @@ void yaw_init(void)
     const fp32 gimbal_yaw_speed_pid[3] = {YAW_SPEED_KP, YAW_SPEED_KI, YAW_SPEED_KD};
 
     /* 转盘PID初始化 */
+    // 转盘位置环PID初始化
     pid_init(&yaw_control_data.turn_position_pid, push_turn_position_pid, TURN_POSITION_MAX_OUT, TURN_POSITION_MAX_IOUT);
+    // 转盘速度环PID初始化
     pid_init(&yaw_control_data.turn_speed_pid, push_turn_speed_pid, TURN_SPEED_MAX_OUT, TURN_SPEED_MAX_IOUT);
 
     /* 转盘PID初始化 */
+    // yaw位置环PID初始化
     pid_init(&yaw_control_data.yaw_position_pid, gimbal_yaw_position_pid, YAW_POSITION_MAX_OUT, YAW_POSITION_MAX_IOUT);
+    // yaw速度环PID初始化
     pid_init(&yaw_control_data.yaw_speed_pid, gimbal_yaw_speed_pid, YAW_SPEED_MAX_OUT, YAW_SPEED_MAX_IOUT);
 
     // 转盘电机数据指针绑定
@@ -46,25 +50,24 @@ void yaw_init(void)
     yaw_control_data.yaw_rc = get_remote_control_point();
     // 转盘电机初始位
     yaw_control_data.turn_target_angle = 1.06854808f;
-    //状态机初始位
+    // 状态机初始位
     yaw_control_data.yaw_mode = TURN_READY;
 }
 
 void yaw_feedback_update(yaw_control_data_t *yaw_feedback_update)
 {
     // 角度当前位映射换算更新
-    yaw_control_data.turn_motor_ref_angle =  msp(yaw_control_data.turn_motor_measure->ecd, 0, 8191, 0, 2*PI);
-    yaw_control_data.yaw_motor_ref_angle = msp(yaw_control_data.yaw_motor_measure->ecd, 0, 8191, 0, 2*PI);
+    yaw_control_data.turn_motor_ref_angle = msp(yaw_control_data.turn_motor_measure->ecd, 0, 8191, 0, 2 * PI);
+    yaw_control_data.yaw_motor_ref_angle = msp(yaw_control_data.yaw_motor_measure->ecd, 0, 8191, 0, 2 * PI);
 }
-
 
 void yaw_control_loop(void)
 {
-    //更新目标角度
-    if(yaw_control_data.yaw_mode == TURN_GO)
+    // 更新目标角度
+    if (yaw_control_data.yaw_mode == TURN_GO)
     {
-        yaw_control_data.turn_target_angle += PI/2 ;
-        if(yaw_control_data.turn_target_angle > 2*PI)
+        yaw_control_data.turn_target_angle += PI / 2;
+        if (yaw_control_data.turn_target_angle > 2 * PI)
         {
             yaw_control_data.turn_target_angle = 1.06854808f;
         }
@@ -106,6 +109,7 @@ void yaw_task()
         yaw_feedback_update(&yaw_control_data);
         // 控制计算
         yaw_control_loop();
+        // 设置更新状态机
         yaw_mode_set(&yaw_control_data);
         // 发送电流
         CAN_cmd_gimbal(yaw_control_data.turn_motor_given_current, yaw_control_data.yaw_motor_given_current);
