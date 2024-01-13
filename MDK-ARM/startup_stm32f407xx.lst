@@ -849,8 +849,8 @@ interwork --depend=icbk_darts\startup_stm32f407xx.d -oicbk_darts\startup_stm32f
 ARM Macro Assembler    Page 14 
 
 
-407xx.o -I../Core/Inc -I.\RTE\_ICBK_Darts -IE:\software\Keil\ARM\CMSIS\5.8.0\CM
-SIS\Core\Include -IE:\software\Keil\Keil\STM32F4xx_DFP\2.8.0\Drivers\CMSIS\Devi
+407xx.o -I../Core/Inc -I.\RTE\_ICBK_Darts -IE:\software\keil\ARM\CMSIS\5.8.0\CM
+SIS\Core\Include -IE:\software\keil\Keil\STM32F4xx_DFP\2.8.0\Drivers\CMSIS\Devi
 ce\ST\STM32F4xx\Include --predefine="__UVISION_VERSION SETA 536" --predefine="_
 RTE_ SETA 1" --predefine="STM32F407xx SETA 1" --predefine="_RTE_ SETA 1" --list
 =startup_stm32f407xx.lst startup_stm32f407xx.s

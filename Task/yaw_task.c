@@ -7,6 +7,7 @@
 #include <math.h>
 #include "bsp_rc.h"
 #include "remote_control.h"
+#include "shoot_task.h"
 
 yaw_control_data_t yaw_control_data;                               // 全局数据
 void yaw_init(void);                                               // yaw与turn电机初始化
@@ -49,7 +50,9 @@ void yaw_init(void)
     // 遥控器指针绑定
     yaw_control_data.yaw_rc = get_remote_control_point();
     // 转盘电机初始位
-    yaw_control_data.turn_target_angle = 1.06854808f;
+    yaw_control_data.turn_target_angle = TURN_INIT_ANGLE;
+    // YAW电机初始位
+    yaw_control_data.turn_target_angle = YAW_INIT_ANGLE;
     // 状态机初始位
     yaw_control_data.yaw_mode = TURN_READY;
 }
@@ -57,8 +60,12 @@ void yaw_init(void)
 void yaw_feedback_update(yaw_control_data_t *yaw_feedback_update)
 {
     // 角度当前位映射换算更新
+    // TURN电机使用PI[0-2*PI]
     yaw_control_data.turn_motor_ref_angle = msp(yaw_control_data.turn_motor_measure->ecd, 0, 8191, 0, 2 * PI);
-    yaw_control_data.yaw_motor_ref_angle = msp(yaw_control_data.yaw_motor_measure->ecd, 0, 8191, 0, 2 * PI);
+    // YAW电机使用ecd[0-8191]
+    yaw_control_data.yaw_motor_ref_angle = yaw_control_data.yaw_motor_measure->ecd;
+    // YAW电机--遥控器速度数据更新
+    yaw_control_data.yaw_get_rc_add_ecd = yaw_control_data.yaw_rc->rc.ch[0];
 }
 
 void yaw_control_loop(void)
@@ -66,12 +73,27 @@ void yaw_control_loop(void)
     // 更新目标角度
     if (yaw_control_data.yaw_mode == TURN_GO)
     {
+        // 拨一次转90°
         yaw_control_data.turn_target_angle += PI / 2;
         if (yaw_control_data.turn_target_angle > 2 * PI)
         {
-            yaw_control_data.turn_target_angle = 1.06854808f;
+            yaw_control_data.turn_target_angle = TURN_INIT_ANGLE;
         }
         yaw_control_data.yaw_mode = TURN_OVER;
+    }
+    // 更新YAW轴
+    if (yaw_control_data.yaw_mode == YAW_UNLOCK)
+    {
+        yaw_control_data.turn_target_angle += yaw_control_data.yaw_get_rc_add_ecd * RC_TO_YAW;
+        // yaw轴电机限幅
+        if (yaw_control_data.turn_target_angle > YAW_LIMIT_MAX_ECD)
+        {
+            yaw_control_data.turn_target_angle = YAW_LIMIT_MAX_ECD;
+        }
+        if (yaw_control_data.turn_target_angle < YAW_LIMIT_MAX_ECD)
+        {
+            yaw_control_data.turn_target_angle = YAW_LIMIT_MIN_ECD;
+        }
     }
     // 转盘角度环计算
     yaw_control_data.turn_inner_out = (int16_t)pid_calc(&yaw_control_data.turn_position_pid, yaw_control_data.turn_motor_ref_angle, yaw_control_data.turn_target_angle);
@@ -90,10 +112,15 @@ void yaw_mode_set(yaw_control_data_t *yaw_mode_set)
     {
         yaw_mode_set->yaw_mode = TURN_GO;
     }
-    // 右开关向上拨转一圈
+    // 右开关从上向下拨回到就绪状态
     if (yaw_mode_set->yaw_mode == TURN_OVER && yaw_control_data.yaw_rc->rc.s[0] == 0x03)
     {
         yaw_mode_set->yaw_mode = TURN_READY;
+    }
+    // 右开关向下拨，YAW轴解锁
+    if (yaw_mode_set->yaw_mode == TURN_READY && yaw_control_data.yaw_rc->rc.s[0] == 0x02 && yaw_control_data.yaw_rc->rc.s[1] == 0x03)
+    {
+        yaw_mode_set->yaw_mode = YAW_UNLOCK;
     }
 }
 
