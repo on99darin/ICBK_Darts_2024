@@ -50,9 +50,9 @@ void yaw_init(void)
     // 遥控器指针绑定
     yaw_control_data.yaw_rc = get_remote_control_point();
     // 转盘电机初始位
-    yaw_control_data.turn_target_angle = TURN_INIT_ANGLE;
+    yaw_control_data.turn_target_angle = 1.06854808f;
     // YAW电机初始位
-    yaw_control_data.turn_target_angle = YAW_INIT_ANGLE;
+    yaw_control_data.yaw_target_angle = 3500.f;
     // 状态机初始位
     yaw_control_data.yaw_mode = TURN_READY;
 }
@@ -77,23 +77,24 @@ void yaw_control_loop(void)
         yaw_control_data.turn_target_angle += PI / 2;
         if (yaw_control_data.turn_target_angle > 2 * PI)
         {
-            yaw_control_data.turn_target_angle = TURN_INIT_ANGLE;
+            yaw_control_data.turn_target_angle = 1.06854808f;
         }
         yaw_control_data.yaw_mode = TURN_OVER;
     }
     // 更新YAW轴
     if (yaw_control_data.yaw_mode == YAW_UNLOCK)
     {
-        yaw_control_data.turn_target_angle += yaw_control_data.yaw_get_rc_add_ecd * RC_TO_YAW;
+        yaw_control_data.yaw_target_angle += (yaw_control_data.yaw_get_rc_add_ecd * RC_TO_YAW);
         // yaw轴电机限幅
-        if (yaw_control_data.turn_target_angle > YAW_LIMIT_MAX_ECD)
+        if (yaw_control_data.yaw_target_angle > 6000)
         {
-            yaw_control_data.turn_target_angle = YAW_LIMIT_MAX_ECD;
+            yaw_control_data.yaw_target_angle = 6000;
         }
-        if (yaw_control_data.turn_target_angle < YAW_LIMIT_MAX_ECD)
+        else if (yaw_control_data.yaw_target_angle < 3000)
         {
-            yaw_control_data.turn_target_angle = YAW_LIMIT_MIN_ECD;
+            yaw_control_data.yaw_target_angle = 3000;
         }
+			
     }
     // 转盘角度环计算
     yaw_control_data.turn_inner_out = (int16_t)pid_calc(&yaw_control_data.turn_position_pid, yaw_control_data.turn_motor_ref_angle, yaw_control_data.turn_target_angle);
@@ -140,6 +141,7 @@ void yaw_task()
         yaw_mode_set(&yaw_control_data);
         // 发送电流
         CAN_cmd_gimbal(yaw_control_data.turn_motor_given_current, yaw_control_data.yaw_motor_given_current);
+				//CAN_cmd_gimbal(0, 500);
         vTaskDelay(2);
     }
 }

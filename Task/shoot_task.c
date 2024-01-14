@@ -100,7 +100,7 @@ void shoot_control_loop(void)
             // 摩擦轮的速度设定
             shoot_control_data.fric_set_speed = FRIC_TARGGET_SPEED;
             // 推杆电机的速度设定
-            shoot_control_data.push_set_speed = (shoot_control_data.push_get_rc_speed * 6); // 推杆范围[-660,660],乘系数变推杆最大速度，M2006转速范围约[-8000,8000]
+            shoot_control_data.push_set_speed = -(shoot_control_data.push_get_rc_speed * 6); // 推杆范围[-660,660],乘系数变推杆最大速度，M2006转速范围约[-8000,8000]
         }
         // 摩擦轮M3508闭环计算
         shoot_control_data.fric_left_given_current = (int16_t)pid_calc(&shoot_control_data.fric_left_pid, shoot_control_data.fric_left_ref_speed, shoot_control_data.fric_set_speed);

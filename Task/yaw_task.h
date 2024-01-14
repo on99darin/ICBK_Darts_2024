@@ -28,11 +28,11 @@
 #define TURN_POSITION_MAX_IOUT 0.0f
 
 /* yaw速度环PID */
-#define YAW_SPEED_KP 20.0f
-#define YAW_SPEED_KI 0.0f
+#define YAW_SPEED_KP 10.0f
+#define YAW_SPEED_KI 0.5f
 #define YAW_SPEED_KD 0.0f
-#define YAW_SPEED_MAX_OUT 20000.0f
-#define YAW_SPEED_MAX_IOUT 3000.0f
+#define YAW_SPEED_MAX_OUT 10000.0f
+#define YAW_SPEED_MAX_IOUT 2000.0f
 
 /* yaw角度环PID */
 #define YAW_POSITION_KP 1.0f
@@ -47,11 +47,11 @@
 #define YAW_INIT_ANGLE 10.0f
 
 // yaw轴遥控器数据转ecd增量
-#define RC_TO_YAW 0.1f
+#define RC_TO_YAW 0.001f
 
 /* yaw电机限位置 */
-#define YAW_LIMIT_MAX_ECD 80
-#define YAW_LIMIT_MIN_ECD 800
+#define YAW_LIMIT_MAX_ECD 3000
+#define YAW_LIMIT_MIN_ECD 6000
 // 状态模式列表
 typedef enum
 {
