@@ -75,6 +75,14 @@ void shoot_mode_set(shoot_control_data_t *shoot_mode_set)
     // 挡位数据更新
     shoot_mode_set->last_switch = shoot_mode_set->shoot_rc->rc.s[1];
 }
+
+//push电机推动扫描限位
+void push_limit_control(void)
+{
+		shoot_control_data.push_up_flag = HAL_GPIO_ReadPin(UP_DETECT_GPIO_Port,UP_DETECT_Pin);
+		shoot_control_data.push_down_flag = HAL_GPIO_ReadPin(DOWN_DETECT_GPIO_Port,DOWN_DETECT_Pin);
+}
+
 // 发射控制
 void shoot_control_loop(void)
 {
@@ -82,6 +90,8 @@ void shoot_control_loop(void)
     shoot_mode_set(&shoot_control_data);
     // 摩擦轮数据反馈更新
     shoot_feedback_update(&shoot_control_data);
+	//PUSH电机微动限位扫描
+		push_limit_control();
     if (shoot_control_data.shoot_mode == FRIC_NO_CURRENT)
     {
         shoot_control_data.fric_left_given_current = 0;
@@ -100,7 +110,8 @@ void shoot_control_loop(void)
             // 摩擦轮的速度设定
             shoot_control_data.fric_set_speed = FRIC_TARGGET_SPEED;
             // 推杆电机的速度设定
-            shoot_control_data.push_set_speed = -(shoot_control_data.push_get_rc_speed * 6); // 推杆范围[-660,660],乘系数变推杆最大速度，M2006转速范围约[-8000,8000]
+            shoot_control_data.push_set_speed = -(shoot_control_data.push_get_rc_speed * 10
+            ); // 推杆范围[-660,660],乘系数变推杆最大速度，M2006转速范围约[-8000,8000]
         }
         // 摩擦轮M3508闭环计算
         shoot_control_data.fric_left_given_current = (int16_t)pid_calc(&shoot_control_data.fric_left_pid, shoot_control_data.fric_left_ref_speed, shoot_control_data.fric_set_speed);
@@ -109,6 +120,7 @@ void shoot_control_loop(void)
         shoot_control_data.push_motor_given_current = (int16_t)pid_calc(&shoot_control_data.push_motor_pid, shoot_control_data.push_motor_ref_speed, shoot_control_data.push_set_speed);
     }
 }
+
 // task主函数
 void shoot_task()
 {
@@ -116,11 +128,11 @@ void shoot_task()
     shoot_init(); // 初始化发射机构
     while (1)
     {
-        // 摩擦轮闭环
         shoot_control_loop();
         // 发送电流
         CAN_cmd_shoot(shoot_control_data.fric_left_given_current, shoot_control_data.fric_right_given_current, shoot_control_data.push_motor_given_current);
+        //CAN_cmd_shoot(0, 0, shoot_control_data.push_motor_given_current);
         // 等待接收数据刷新，避免刷新速度过快
-        vTaskDelay(2);
+        vTaskDelay(1);
     }
 }

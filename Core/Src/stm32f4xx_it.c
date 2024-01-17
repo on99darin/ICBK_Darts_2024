@@ -60,7 +60,6 @@
 extern CAN_HandleTypeDef hcan1;
 extern CAN_HandleTypeDef hcan2;
 extern DMA_HandleTypeDef hdma_usart3_rx;
-extern UART_HandleTypeDef huart3;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -209,8 +208,6 @@ void CAN1_RX0_IRQHandler(void)
 
   /* USER CODE END CAN1_RX0_IRQn 1 */
 }
-
-
 
 /**
   * @brief This function handles CAN2 RX0 interrupts.

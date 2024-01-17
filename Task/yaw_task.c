@@ -50,11 +50,13 @@ void yaw_init(void)
     // 遥控器指针绑定
     yaw_control_data.yaw_rc = get_remote_control_point();
     // 转盘电机初始位
-    yaw_control_data.turn_target_angle = 1.06854808f;
+    yaw_control_data.turn_target_angle = 1.00854808f;
     // YAW电机初始位
-    yaw_control_data.yaw_target_angle = 3500.f;
+    yaw_control_data.yaw_target_angle = 3825.0f;
     // 状态机初始位
     yaw_control_data.yaw_mode = TURN_READY;
+    // TURN电机发射次数初始化
+    yaw_control_data.turn_motor_time = 0;
 }
 
 void yaw_feedback_update(yaw_control_data_t *yaw_feedback_update)
@@ -70,40 +72,88 @@ void yaw_feedback_update(yaw_control_data_t *yaw_feedback_update)
 
 void yaw_control_loop(void)
 {
-    // 更新目标角度
-    if (yaw_control_data.yaw_mode == TURN_GO)
+    // 左下拨动全车无力状态
+    if (yaw_control_data.yaw_rc->rc.s[1] == 0x02)
     {
-        // 拨一次转90°
-        yaw_control_data.turn_target_angle += PI / 2;
-        if (yaw_control_data.turn_target_angle > 2 * PI)
-        {
-            yaw_control_data.turn_target_angle = 1.06854808f;
-        }
-        yaw_control_data.yaw_mode = TURN_OVER;
+        CAN_cmd_gimbal(0, 0);
     }
-    // 更新YAW轴
-    if (yaw_control_data.yaw_mode == YAW_UNLOCK)
+    else
     {
-        yaw_control_data.yaw_target_angle += (yaw_control_data.yaw_get_rc_add_ecd * RC_TO_YAW);
-        // yaw轴电机限幅
-        if (yaw_control_data.yaw_target_angle > 6000)
+        // 更新目标角度
+        if (yaw_control_data.yaw_mode == TURN_GO)
         {
-            yaw_control_data.yaw_target_angle = 6000;
+            switch (yaw_control_data.turn_motor_time)
+            {
+
+            case 0:
+            {
+                yaw_control_data.turn_target_angle += PI;
+                yaw_control_data.turn_motor_time = 1;
+                break;
+            }
+
+            case 1:
+            {
+                yaw_control_data.turn_target_angle += PI / 2;
+                yaw_control_data.turn_motor_time = 2;
+                break;
+            }
+            case 2:
+            {
+                yaw_control_data.turn_target_angle -= PI;
+                yaw_control_data.turn_motor_time = 3;
+                break;
+            }
+            case 3:
+            {
+                yaw_control_data.turn_target_angle = 1.00854808f;
+                yaw_control_data.turn_motor_time = 0;
+                break;
+            }
+            default:
+            {
+                break;
+            }
+            }
+            /*
+            yaw_control_data.turn_target_angle += PI;
+            if (yaw_control_data.turn_target_angle > 2 * PI)
+            {
+                yaw_control_data.turn_target_angle = 1.00854808f;
+            }
+            */
+            yaw_control_data.yaw_mode = TURN_OVER;
         }
-        else if (yaw_control_data.yaw_target_angle < 3000)
+        // 更新YAW轴
+        if (yaw_control_data.yaw_mode == YAW_UNLOCK)
         {
-            yaw_control_data.yaw_target_angle = 3000;
+            yaw_control_data.yaw_target_angle += (yaw_control_data.yaw_get_rc_add_ecd * RC_TO_YAW);
+            // yaw轴电机限幅
+            if (yaw_control_data.yaw_target_angle > 5250)
+            {
+                yaw_control_data.yaw_target_angle = 5250;
+            }
+            else if (yaw_control_data.yaw_target_angle < 2050)
+            {
+                yaw_control_data.yaw_target_angle = 2050;
+            }
         }
-			
+        // 转盘角度环计算
+        yaw_control_data.turn_inner_out = (int16_t)pid_calc(&yaw_control_data.turn_position_pid, yaw_control_data.turn_motor_ref_angle, yaw_control_data.turn_target_angle);
+        // yaw_control_data.turn_inner_out = 25.0f;
+        //  转盘速度环计算
+        yaw_control_data.turn_motor_given_current = (int16_t)pid_calc(&yaw_control_data.turn_speed_pid, yaw_control_data.turn_motor_measure->speed_rpm, yaw_control_data.turn_inner_out);
+        // yaw角度环计算
+        yaw_control_data.yaw_inner_out = (int16_t)pid_calc(&yaw_control_data.yaw_position_pid, yaw_control_data.yaw_motor_ref_angle, yaw_control_data.yaw_target_angle);
+        // yaw速度环计算
+        yaw_control_data.yaw_motor_given_current = (int16_t)pid_calc(&yaw_control_data.yaw_speed_pid, yaw_control_data.yaw_motor_measure->speed_rpm, yaw_control_data.yaw_inner_out);
+        // 发送电流
+        //
+        CAN_cmd_gimbal(yaw_control_data.turn_motor_given_current, yaw_control_data.yaw_motor_given_current);
+        // YAW调试
+        // CAN_cmd_gimbal(0, yaw_control_data.yaw_motor_given_current);
+        // CAN_cmd_gimbal(0, 500);
     }
-    // 转盘角度环计算
-    yaw_control_data.turn_inner_out = (int16_t)pid_calc(&yaw_control_data.turn_position_pid, yaw_control_data.turn_motor_ref_angle, yaw_control_data.turn_target_angle);
-    // 转盘速度环计算
-    yaw_control_data.turn_motor_given_current = (int16_t)pid_calc(&yaw_control_data.turn_speed_pid, yaw_control_data.turn_motor_measure->speed_rpm, yaw_control_data.turn_inner_out);
-    // yaw角度环计算
-    yaw_control_data.yaw_inner_out = (int16_t)pid_calc(&yaw_control_data.yaw_position_pid, yaw_control_data.yaw_motor_ref_angle, yaw_control_data.yaw_target_angle);
-    // yaw速度环计算
-    yaw_control_data.yaw_motor_given_current = (int16_t)pid_calc(&yaw_control_data.yaw_speed_pid, yaw_control_data.yaw_motor_measure->speed_rpm, yaw_control_data.yaw_inner_out);
 }
 
 void yaw_mode_set(yaw_control_data_t *yaw_mode_set)
@@ -119,9 +169,14 @@ void yaw_mode_set(yaw_control_data_t *yaw_mode_set)
         yaw_mode_set->yaw_mode = TURN_READY;
     }
     // 右开关向下拨，YAW轴解锁
-    if (yaw_mode_set->yaw_mode == TURN_READY && yaw_control_data.yaw_rc->rc.s[0] == 0x02 && yaw_control_data.yaw_rc->rc.s[1] == 0x03)
+    if (yaw_mode_set->yaw_mode == TURN_READY && yaw_control_data.yaw_rc->rc.s[0] == 0x02)
     {
         yaw_mode_set->yaw_mode = YAW_UNLOCK;
+    }
+    // 右开关从下向中拨
+    if (yaw_mode_set->yaw_mode == YAW_UNLOCK && yaw_control_data.yaw_rc->rc.s[0] == 0x03)
+    {
+        yaw_mode_set->yaw_mode = TURN_READY;
     }
 }
 
@@ -139,9 +194,6 @@ void yaw_task()
         yaw_control_loop();
         // 设置更新状态机
         yaw_mode_set(&yaw_control_data);
-        // 发送电流
-        CAN_cmd_gimbal(yaw_control_data.turn_motor_given_current, yaw_control_data.yaw_motor_given_current);
-				//CAN_cmd_gimbal(0, 500);
-        vTaskDelay(2);
+        vTaskDelay(1);
     }
 }

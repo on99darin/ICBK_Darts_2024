@@ -10,7 +10,7 @@
 
 #define FRIC_STOP_SPEED 0.0f // 摩擦轮停止速度
 #define PUSH_STOP_SPEED 0.0f
-#define FRIC_TARGGET_SPEED 2.0f // 设定摩擦轮的线速度 m/s
+#define FRIC_TARGGET_SPEED 0.93f // 设定摩擦轮的线速度 m/s
 
 /* 摩擦轮角速度到线速度的转换率 = 摩擦轮半径(m) / 60
 带减速箱角速度到线速度的转换率 = 拨弹盘半径(m) / (减速比) * 60 0.0008333333f */
@@ -76,6 +76,9 @@ typedef struct
     int16_t push_motor_given_current; // 给定右摩擦轮电机的电流值
 
     int16_t push_get_rc_speed; // 存放遥控器给推杆速度的数据
+		
+		int16_t push_up_flag;//存放推杆上限位的标志
+		int16_t push_down_flag;//存放推杆下限位的标志
 
     char last_switch; // 上一次的挡位
 
