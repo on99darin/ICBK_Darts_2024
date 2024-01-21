@@ -1,3 +1,14 @@
+/**
+  * @file       yaw_task.c/h
+  * @brief      飞镖yaw轴任务，yaw电机+转盘电机
+  * @note
+  * @history
+  *  Version    Date            Author          Modification
+  *
+  @verbatim
+  yaw和turn电机初始位在.c文件修改。并未存在.h文件
+  ==============================================================================
+  */
 #include "yaw_task.h"
 #include "main.h"
 #include "CAN_receive.h"
@@ -79,12 +90,11 @@ void yaw_control_loop(void)
     }
     else
     {
-        // 更新目标角度
+        // 更新目标角度，平衡对角发射
         if (yaw_control_data.yaw_mode == TURN_GO)
         {
             switch (yaw_control_data.turn_motor_time)
             {
-
             case 0:
             {
                 yaw_control_data.turn_target_angle += PI;
@@ -115,13 +125,6 @@ void yaw_control_loop(void)
                 break;
             }
             }
-            /*
-            yaw_control_data.turn_target_angle += PI;
-            if (yaw_control_data.turn_target_angle > 2 * PI)
-            {
-                yaw_control_data.turn_target_angle = 1.00854808f;
-            }
-            */
             yaw_control_data.yaw_mode = TURN_OVER;
         }
         // 更新YAW轴
@@ -140,7 +143,6 @@ void yaw_control_loop(void)
         }
         // 转盘角度环计算
         yaw_control_data.turn_inner_out = (int16_t)pid_calc(&yaw_control_data.turn_position_pid, yaw_control_data.turn_motor_ref_angle, yaw_control_data.turn_target_angle);
-        // yaw_control_data.turn_inner_out = 25.0f;
         //  转盘速度环计算
         yaw_control_data.turn_motor_given_current = (int16_t)pid_calc(&yaw_control_data.turn_speed_pid, yaw_control_data.turn_motor_measure->speed_rpm, yaw_control_data.turn_inner_out);
         // yaw角度环计算
@@ -148,11 +150,7 @@ void yaw_control_loop(void)
         // yaw速度环计算
         yaw_control_data.yaw_motor_given_current = (int16_t)pid_calc(&yaw_control_data.yaw_speed_pid, yaw_control_data.yaw_motor_measure->speed_rpm, yaw_control_data.yaw_inner_out);
         // 发送电流
-        //
         CAN_cmd_gimbal(yaw_control_data.turn_motor_given_current, yaw_control_data.yaw_motor_given_current);
-        // YAW调试
-        // CAN_cmd_gimbal(0, yaw_control_data.yaw_motor_given_current);
-        // CAN_cmd_gimbal(0, 500);
     }
 }
 
@@ -194,6 +192,7 @@ void yaw_task()
         yaw_control_loop();
         // 设置更新状态机
         yaw_mode_set(&yaw_control_data);
+        // 避免刷新过快
         vTaskDelay(1);
     }
 }

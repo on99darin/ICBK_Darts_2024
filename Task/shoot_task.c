@@ -1,3 +1,13 @@
+/**
+  * @file       shoot_task.c/h
+  * @brief      飞镖发射任务，摩擦轮x2+推杆电机
+  * @note
+  * @history
+  *  Version    Date            Author          Modification
+  *
+  @verbatim
+  ==============================================================================
+  */
 #include "shoot_task.h"
 #include "main.h"
 #include "CAN_receive.h"
@@ -14,6 +24,7 @@ void shoot_init(void);                                                   // 发�
 void shoot_feedback_update(shoot_control_data_t *shoot_feedback_update); // 发射数据反馈更新
 void shoot_mode_set(shoot_control_data_t *shoot_mode_set);               // 发射机构状态机设置
 void shoot_control_loop(void);                                           // 发射控制
+void push_limit_control(void);                                           // push电机推动扫描限位
 
 void shoot_init(void) // 发射机构初始化
 {
@@ -41,7 +52,12 @@ void shoot_init(void) // 发射机构初始化
     // 遥控器指针绑定
     shoot_control_data.shoot_rc = get_remote_control_point();
 }
-
+// push电机推动扫描限位
+void push_limit_control(void)
+{
+    shoot_control_data.push_up_flag = HAL_GPIO_ReadPin(UP_DETECT_GPIO_Port, UP_DETECT_Pin);
+    shoot_control_data.push_down_flag = HAL_GPIO_ReadPin(DOWN_DETECT_GPIO_Port, DOWN_DETECT_Pin);
+}
 // 发射数据反馈更新
 void shoot_feedback_update(shoot_control_data_t *shoot_feedback_update)
 {
@@ -52,6 +68,8 @@ void shoot_feedback_update(shoot_control_data_t *shoot_feedback_update)
     shoot_feedback_update->push_motor_ref_speed = shoot_control_data.push_motor->speed_rpm;
     // 推杆--遥控器速度数据更新
     shoot_feedback_update->push_get_rc_speed = shoot_control_data.shoot_rc->rc.ch[3];
+    // PUSH电机微动限位扫描
+    push_limit_control();
 }
 
 // 发射机构状态机设置
@@ -76,13 +94,6 @@ void shoot_mode_set(shoot_control_data_t *shoot_mode_set)
     shoot_mode_set->last_switch = shoot_mode_set->shoot_rc->rc.s[1];
 }
 
-//push电机推动扫描限位
-void push_limit_control(void)
-{
-		shoot_control_data.push_up_flag = HAL_GPIO_ReadPin(UP_DETECT_GPIO_Port,UP_DETECT_Pin);
-		shoot_control_data.push_down_flag = HAL_GPIO_ReadPin(DOWN_DETECT_GPIO_Port,DOWN_DETECT_Pin);
-}
-
 // 发射控制
 void shoot_control_loop(void)
 {
@@ -90,17 +101,20 @@ void shoot_control_loop(void)
     shoot_mode_set(&shoot_control_data);
     // 摩擦轮数据反馈更新
     shoot_feedback_update(&shoot_control_data);
-	//PUSH电机微动限位扫描
-		push_limit_control();
+    // 判断状态机是否为无力状态
     if (shoot_control_data.shoot_mode == FRIC_NO_CURRENT)
     {
+        // 摩擦轮发送电流为0
         shoot_control_data.fric_left_given_current = 0;
         shoot_control_data.fric_right_given_current = 0;
     }
     else
-    { /* 状态机为摩擦轮停止时，摩擦轮停止，推杆停止 */
+    // 如果状态机不为无力状态，进行下面的判断
+    {
+        /* 状态机为摩擦轮停止时，摩擦轮停止，推杆停止 */
         if (shoot_control_data.shoot_mode == FRIC_STOP)
         {
+            // 此时摩擦轮速度为0，不允许用手拨动摩擦轮
             shoot_control_data.fric_set_speed = FRIC_STOP_SPEED;
             shoot_control_data.push_set_speed = PUSH_STOP_SPEED;
         }
@@ -110,8 +124,17 @@ void shoot_control_loop(void)
             // 摩擦轮的速度设定
             shoot_control_data.fric_set_speed = FRIC_TARGGET_SPEED;
             // 推杆电机的速度设定
-            shoot_control_data.push_set_speed = -(shoot_control_data.push_get_rc_speed * 10
-            ); // 推杆范围[-660,660],乘系数变推杆最大速度，M2006转速范围约[-8000,8000]
+            shoot_control_data.push_set_speed = -(shoot_control_data.push_get_rc_speed * 10);
+            // 下微动开关限位
+            if (shoot_control_data.push_up_flag == 0 && shoot_control_data.push_set_speed > 0)
+            {
+                shoot_control_data.push_set_speed = PUSH_STOP_SPEED;
+            }
+            // 上微动开关限位
+            if (shoot_control_data.push_down_flag == 0 && shoot_control_data.push_set_speed < 0)
+            {
+                shoot_control_data.push_set_speed = PUSH_STOP_SPEED;
+            }
         }
         // 摩擦轮M3508闭环计算
         shoot_control_data.fric_left_given_current = (int16_t)pid_calc(&shoot_control_data.fric_left_pid, shoot_control_data.fric_left_ref_speed, shoot_control_data.fric_set_speed);
@@ -128,11 +151,11 @@ void shoot_task()
     shoot_init(); // 初始化发射机构
     while (1)
     {
+        // 发射控制刷新
         shoot_control_loop();
         // 发送电流
         CAN_cmd_shoot(shoot_control_data.fric_left_given_current, shoot_control_data.fric_right_given_current, shoot_control_data.push_motor_given_current);
-        //CAN_cmd_shoot(0, 0, shoot_control_data.push_motor_given_current);
-        // 等待接收数据刷新，避免刷新速度过快
+        //  等待接收数据刷新，避免刷新速度过快
         vTaskDelay(1);
     }
 }
