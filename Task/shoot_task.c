@@ -124,7 +124,7 @@ void shoot_control_loop(void)
             // 摩擦轮的速度设定
             shoot_control_data.fric_set_speed = FRIC_TARGGET_SPEED;
             // 推杆电机的速度设定
-            shoot_control_data.push_set_speed = -(shoot_control_data.push_get_rc_speed * 10);
+            shoot_control_data.push_set_speed = -(shoot_control_data.push_get_rc_speed * 15);
             // 下微动开关限位
             if (shoot_control_data.push_up_flag == 0 && shoot_control_data.push_set_speed > 0)
             {

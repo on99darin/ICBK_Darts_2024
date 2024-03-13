@@ -21,10 +21,10 @@
 #define TURN_SPEED_MAX_IOUT 3000.0f
 
 /* 转盘角度环PID */
-#define TURN_POSITION_KP 50.0f
-#define TURN_POSITION_KI 5.0f
-#define TURN_POSITION_KD 0.0f
-#define TURN_POSITION_MAX_OUT 80.0f
+#define TURN_POSITION_KP 60.0f
+#define TURN_POSITION_KI 0.0f
+#define TURN_POSITION_KD 5.0f
+#define TURN_POSITION_MAX_OUT 70.0f
 #define TURN_POSITION_MAX_IOUT 0.0f
 
 /* yaw速度环PID */
@@ -42,12 +42,12 @@
 #define YAW_POSITION_MAX_IOUT 80.0f
 
 // 转盘初始位(PI)
-#define TURN_INIT_ANGLE 1.06854808f
+#define TURN_INIT_ANGLE 0.862202466f
 // YAW初始位（ECD）
 #define YAW_INIT_ANGLE 10.0f
 
 // yaw轴遥控器数据转ecd增量
-#define RC_TO_YAW 0.0008f
+#define RC_TO_YAW 0.0006f
 
 /* yaw电机限位置 */
 #define YAW_LIMIT_MAX_ECD 3000

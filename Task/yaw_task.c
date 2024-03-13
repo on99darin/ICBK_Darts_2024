@@ -61,7 +61,7 @@ void yaw_init(void)
     // 遥控器指针绑定
     yaw_control_data.yaw_rc = get_remote_control_point();
     // 转盘电机初始位
-    yaw_control_data.turn_target_angle = 1.00854808f;
+    yaw_control_data.turn_target_angle = TURN_INIT_ANGLE;
     // YAW电机初始位
     yaw_control_data.yaw_target_angle = 3825.0f;
     // 状态机初始位
@@ -116,7 +116,7 @@ void yaw_control_loop(void)
             }
             case 3:
             {
-                yaw_control_data.turn_target_angle = 1.00854808f;
+                yaw_control_data.turn_target_angle = TURN_INIT_ANGLE;
                 yaw_control_data.turn_motor_time = 0;
                 break;
             }
@@ -143,6 +143,7 @@ void yaw_control_loop(void)
         }
         // 转盘角度环计算
         yaw_control_data.turn_inner_out = (int16_t)pid_calc(&yaw_control_data.turn_position_pid, yaw_control_data.turn_motor_ref_angle, yaw_control_data.turn_target_angle);
+				//yaw_control_data.turn_inner_out = 60;
         //  转盘速度环计算
         yaw_control_data.turn_motor_given_current = (int16_t)pid_calc(&yaw_control_data.turn_speed_pid, yaw_control_data.turn_motor_measure->speed_rpm, yaw_control_data.turn_inner_out);
         // yaw角度环计算
