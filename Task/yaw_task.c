@@ -6,7 +6,7 @@
   *  Version    Date            Author          Modification
   *
   @verbatim
-  yaw和turn电机初始位在.c文件修改。并未存在.h文件
+  yaw和turn电机初始位在.c文件修改。并不在.h文件
   ==============================================================================
   */
 #include "yaw_task.h"
@@ -24,6 +24,7 @@ yaw_control_data_t yaw_control_data;                               // 全局数�
 void yaw_init(void);                                               // yaw与turn电机初始化
 void yaw_feedback_update(yaw_control_data_t *yaw_feedback_update); // yaw数据反馈更新
 void yaw_control_loop(void);                                       // 电机控制
+void yaw_mode_set(yaw_control_data_t *yaw_mode_set);               // 状态机刷新
 
 // 映射函数，将编码器的值（0~8191）转换为弧度制的角度值（-PI~PI）
 double msp(double x, double in_min, double in_max, double out_min, double out_max)
@@ -33,6 +34,8 @@ double msp(double x, double in_min, double in_max, double out_min, double out_ma
 
 void yaw_init(void)
 {
+    // 等待系统上线
+    vTaskDelay(10);
     // 转盘位置环PID参数
     const fp32 push_turn_position_pid[3] = {TURN_POSITION_KP, TURN_POSITION_KI, TURN_POSITION_KD};
     // 转盘速度环PID参数
@@ -143,7 +146,7 @@ void yaw_control_loop(void)
         }
         // 转盘角度环计算
         yaw_control_data.turn_inner_out = (int16_t)pid_calc(&yaw_control_data.turn_position_pid, yaw_control_data.turn_motor_ref_angle, yaw_control_data.turn_target_angle);
-				//yaw_control_data.turn_inner_out = 60;
+        // yaw_control_data.turn_inner_out = 60;
         //  转盘速度环计算
         yaw_control_data.turn_motor_given_current = (int16_t)pid_calc(&yaw_control_data.turn_speed_pid, yaw_control_data.turn_motor_measure->speed_rpm, yaw_control_data.turn_inner_out);
         // yaw角度环计算
