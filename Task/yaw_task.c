@@ -170,8 +170,8 @@ void yaw_mode_set(yaw_control_data_t *yaw_mode_set)
     {
         yaw_mode_set->yaw_mode = TURN_READY;
     }
-    // 右开关向下拨，YAW轴解锁
-    if (yaw_mode_set->yaw_mode == TURN_READY && yaw_control_data.yaw_rc->rc.s[0] == 0x02)
+    // 左开关向下拨，YAW轴解锁
+    if (yaw_mode_set->yaw_mode == TURN_READY && yaw_control_data.yaw_rc->rc.s[1] == 0x02)
     {
         yaw_mode_set->yaw_mode = YAW_UNLOCK;
     }

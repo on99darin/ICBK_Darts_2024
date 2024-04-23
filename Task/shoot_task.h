@@ -37,49 +37,50 @@
 #define PUSH_SPEED_MAX_OUT 10000.0f
 #define PUSH_SPEED_MAX_IOUT 50.0f
 
-void shoot_task(void);
+void shoot_task(void const *argument);
 
 // 状态模式列表
 typedef enum
 {
-    FRIC_STOP,       // 摩擦轮停止状态
-    FRIC_RUN,        // 摩擦轮开启状态
-    FRIC_NO_CURRENT, // 摩擦轮无力状态
-    READY_TO_TURN    // 摩擦轮准备就绪
+  FRIC_STOP,       // 摩擦轮停止状态
+  FRIC_RUN,        // 摩擦轮开启状态
+  FRIC_NO_CURRENT, // 摩擦轮无力状态
+  READY_TO_TURN    // 摩擦轮准备就绪
 
 } shoot_control_mode_e;
 
 // 发射机构数据结构体
 typedef struct
 {
-    shoot_control_mode_e shoot_mode; // 发射机构状态机
+  shoot_control_mode_e shoot_mode; // 发射机构状态机
 
-    const RC_ctrl_t *shoot_rc; // 遥控器数据
+  const RC_ctrl_t *shoot_rc; // 遥控器数据
 
-    const motor_measure_t *shoot_fric_left_motor;  // 左摩擦轮电机数据
-    const motor_measure_t *shoot_fric_right_motor; // 右摩擦轮电机数据
-    const motor_measure_t *push_motor;             // 推弹电机数据
+  const motor_measure_t *shoot_fric_left_motor;  // 左摩擦轮电机数据
+  const motor_measure_t *shoot_fric_right_motor; // 右摩擦轮电机数据
+  const motor_measure_t *push_motor;             // 推弹电机数据
 
-    pid_data_t fric_left_pid;  // 左摩擦轮速度环PID
-    pid_data_t fric_right_pid; // 右摩擦轮速度环PID
-    pid_data_t push_motor_pid; // 推弹电机速度环PID
+  pid_data_t fric_left_pid;  // 左摩擦轮速度环PID
+  pid_data_t fric_right_pid; // 右摩擦轮速度环PID
+  pid_data_t push_motor_pid; // 推弹电机速度环PID
 
-    fp32 fric_set_speed; // 摩擦轮预定速度
-    fp32 push_set_speed; // 推弹预定速度
+  fp32 fric_set_speed; // 摩擦轮预定速度
+  fp32 push_set_speed; // 推弹预定速度
 
-    fp32 fric_left_ref_speed;  // 左摩擦轮反馈的速度
-    fp32 fric_right_ref_speed; // 右摩擦轮反馈的速度
-    fp32 push_motor_ref_speed; // 推弹电机反馈的速度
+  fp32 fric_left_ref_speed;  // 左摩擦轮反馈的速度
+  fp32 fric_right_ref_speed; // 右摩擦轮反馈的速度
+  fp32 push_motor_ref_speed; // 推弹电机反馈的速度
 
-    int16_t fric_left_given_current;  // 给定左摩擦轮电机的电流值
-    int16_t fric_right_given_current; // 给定右摩擦轮电机的电流值
-    int16_t push_motor_given_current; // 给定右摩擦轮电机的电流值
+  int16_t fric_left_given_current;  // 给定左摩擦轮电机的电流值
+  int16_t fric_right_given_current; // 给定右摩擦轮电机的电流值
+  int16_t push_motor_given_current; // 给定右摩擦轮电机的电流值
 
-    int16_t push_get_rc_speed; // 存放遥控器给推杆速度的数据
-		
-		int16_t push_up_flag;//存放推杆上限位的标志
-		int16_t push_down_flag;//存放推杆下限位的标志
+  int16_t push_get_rc_speed; // 存放遥控器给推杆速度的数据
 
-    char last_switch; // 上一次的挡位
+  int16_t push_up_flag;   // 存放推杆上限位的标志
+  int16_t push_down_flag; // 存放推杆下限位的标志
+
+  char last_switch; // 上一次的挡位
+  char darts_mode_set;
 
 } shoot_control_data_t;

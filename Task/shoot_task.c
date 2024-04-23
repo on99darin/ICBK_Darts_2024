@@ -4,7 +4,7 @@
   * @note
   * @history
   *  Version    Date            Author          Modification
-  *
+  *  V1.0                       DARIN
   @verbatim
   ==============================================================================
   */
@@ -26,7 +26,12 @@ void shoot_mode_set(shoot_control_data_t *shoot_mode_set);               // 发�
 void shoot_control_loop(void);                                           // 发射控制
 void push_limit_control(void);                                           // push电机推动扫描限位
 
-void shoot_init(void) // 发射机构初始化
+/**
+ * @brief          发射机构初始化
+ * @param[in]      none
+ * @retval         none
+ */
+void shoot_init(void)
 {
     // 摩擦轮速度环PID参数
     const fp32 fric_left_speed_pid[3] = {FRIC_LEFT_SPEED_KP, FRIC_LEFT_SPEED_KI, FRIC_LEFT_SPEED_KD};
@@ -52,13 +57,23 @@ void shoot_init(void) // 发射机构初始化
     // 遥控器指针绑定
     shoot_control_data.shoot_rc = get_remote_control_point();
 }
-// push电机推动扫描限位
+
+/**
+ * @brief          push电机推动扫描限位
+ * @param[in]      none
+ * @retval         none
+ */
 void push_limit_control(void)
 {
     shoot_control_data.push_up_flag = HAL_GPIO_ReadPin(UP_DETECT_GPIO_Port, UP_DETECT_Pin);
     shoot_control_data.push_down_flag = HAL_GPIO_ReadPin(DOWN_DETECT_GPIO_Port, DOWN_DETECT_Pin);
 }
-// 发射数据反馈更新
+
+/**
+ * @brief          发射数据反馈更新
+ * @param[in]      none
+ * @retval         发射数据指针
+ */
 void shoot_feedback_update(shoot_control_data_t *shoot_feedback_update)
 {
     // 摩擦轮线速度更新
@@ -72,29 +87,54 @@ void shoot_feedback_update(shoot_control_data_t *shoot_feedback_update)
     push_limit_control();
 }
 
-// 发射机构状态机设置
+/**
+ * @brief          发射机构状态机设置
+ * @param[in]      none
+ * @retval         发射状态机模式
+ */
 void shoot_mode_set(shoot_control_data_t *shoot_mode_set)
 {
-    // 左开关向上拨启动摩擦轮
-    if (shoot_mode_set->shoot_mode == FRIC_STOP && shoot_control_data.shoot_rc->rc.s[1] == 0x01)
+    if (shoot_control_data.shoot_rc->rc.s[0] == 0x02)
     {
-        shoot_mode_set->shoot_mode = FRIC_RUN;
+        shoot_control_data.darts_mode_set = 0; // 0为主控模式
     }
-    // 左开关中间档闭环停摩擦轮
-    if (shoot_control_data.shoot_rc->rc.s[1] == 0x03)
+    else
+    {
+        shoot_control_data.darts_mode_set = 1; // 1为遥控模式
+    }
+
+    if (shoot_control_data.darts_mode_set == 0)
     {
         shoot_mode_set->shoot_mode = FRIC_STOP;
+        // 临时测试条件值
     }
-    // 左开关下拨发射机构无力
-    if (shoot_control_data.shoot_rc->rc.s[1] == 0x02)
+    if (shoot_control_data.darts_mode_set == 1)
     {
-        shoot_mode_set->shoot_mode = FRIC_NO_CURRENT;
+        // 左开关向上拨启动摩擦轮
+        if (shoot_mode_set->shoot_mode == FRIC_STOP && shoot_control_data.shoot_rc->rc.s[1] == 0x01)
+        {
+            shoot_mode_set->shoot_mode = FRIC_RUN;
+        }
+        // 左开关中间档闭环停摩擦轮
+        if (shoot_control_data.shoot_rc->rc.s[1] == 0x03)
+        {
+            shoot_mode_set->shoot_mode = FRIC_STOP;
+        }
+        // 左开关下拨发射机构无力
+        if (shoot_control_data.shoot_rc->rc.s[1] == 0x02)
+        {
+            shoot_mode_set->shoot_mode = FRIC_NO_CURRENT;
+        }
     }
     // 挡位数据更新
-    shoot_mode_set->last_switch = shoot_mode_set->shoot_rc->rc.s[1];
+    // shoot_mode_set->last_switch = shoot_mode_set->shoot_rc->rc.s[1];
 }
 
-// 发射控制
+/**
+ * @brief          发射控制
+ * @param[in]      none
+ * @retval         none
+ */
 void shoot_control_loop(void)
 {
     // 发射机构状态机设置
@@ -144,8 +184,12 @@ void shoot_control_loop(void)
     }
 }
 
-// task主函数
-void shoot_task()
+/**
+ * @brief          task主函数
+ * @param[in]      none
+ * @retval         none
+ */
+void shoot_task(void const *argument)
 {
 
     shoot_init(); // 初始化发射机构
