@@ -96,7 +96,7 @@ void shoot_mode_set(shoot_control_data_t *shoot_mode_set)
 {
     if (shoot_control_data.shoot_rc->rc.s[0] == 0x02)
     {
-        shoot_control_data.darts_mode_set = 0; // 0为主控模式
+        shoot_control_data.darts_mode_set = 0; // 0为裁判主控模式
     }
     else
     {

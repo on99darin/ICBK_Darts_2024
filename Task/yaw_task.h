@@ -55,10 +55,11 @@
 // 状态模式列表
 typedef enum
 {
-    TURN_READY, // 准备转状态
-    TURN_GO,    // 开转
-    TURN_OVER,  // 转完
-    YAW_UNLOCK  // 解锁YAW轴
+    TURN_READY,      // 准备转状态
+    TURN_GO,         // 开转
+    TURN_OVER,       // 转完
+    YAW_UNLOCK,      // 解锁YAW轴
+    REFEREE_AUTO_RUN // 裁判发射模式
 } yaw_control_mode_e;
 
 typedef struct

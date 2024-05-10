@@ -165,18 +165,23 @@ void yaw_mode_set(yaw_control_data_t *yaw_mode_set)
     {
         yaw_mode_set->yaw_mode = TURN_GO;
     }
-    // 右开关从上向下拨回到就绪状态
+    // 右开关从上向中拨回到就绪状态
     if (yaw_mode_set->yaw_mode == TURN_OVER && yaw_control_data.yaw_rc->rc.s[0] == 0x03)
     {
         yaw_mode_set->yaw_mode = TURN_READY;
     }
     // 左开关向下拨，YAW轴解锁
-    if (yaw_mode_set->yaw_mode == TURN_READY && yaw_control_data.yaw_rc->rc.s[1] == 0x02)
+    if (yaw_mode_set->yaw_mode == yaw_control_data.yaw_rc->rc.s[1] == 0x02)
     {
         yaw_mode_set->yaw_mode = YAW_UNLOCK;
     }
-    // 右开关从下向中拨
-    if (yaw_mode_set->yaw_mode == YAW_UNLOCK && yaw_control_data.yaw_rc->rc.s[0] == 0x03)
+    // 右开关向下拨，裁判自动发射模式
+    if (yaw_mode_set->yaw_mode == yaw_control_data.yaw_rc->rc.s[0] == 0x02)
+    {
+        yaw_mode_set->yaw_mode = REFEREE_AUTO_RUN;
+    }
+    // 左开关从下往中拨
+    if (yaw_mode_set->yaw_mode == YAW_UNLOCK && yaw_control_data.yaw_rc->rc.s[1] == 0x03)
     {
         yaw_mode_set->yaw_mode = TURN_READY;
     }
