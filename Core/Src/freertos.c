@@ -50,7 +50,7 @@
 osThreadId defaultTaskHandle;
 osThreadId ShootTaskHandle;
 osThreadId YawTaskHandle;
-osThreadId CheckTaskHandle;
+osThreadId RefereeTaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -60,7 +60,7 @@ osThreadId CheckTaskHandle;
 void StartDefaultTask(void const * argument);
 extern void shoot_task(void const * argument);
 extern void yaw_task(void const * argument);
-extern void check_task(void const * argument);
+extern void referee_task(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -119,9 +119,9 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(YawTask, yaw_task, osPriorityIdle, 0, 128);
   YawTaskHandle = osThreadCreate(osThread(YawTask), NULL);
 
-  /* definition and creation of CheckTask */
-  osThreadDef(CheckTask, check_task, osPriorityIdle, 0, 128);
-  CheckTaskHandle = osThreadCreate(osThread(CheckTask), NULL);
+  /* definition and creation of RefereeTask */
+  osThreadDef(RefereeTask, referee_task, osPriorityIdle, 0, 128);
+  RefereeTaskHandle = osThreadCreate(osThread(RefereeTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */

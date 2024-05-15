@@ -103,11 +103,6 @@ void shoot_mode_set(shoot_control_data_t *shoot_mode_set)
         shoot_control_data.darts_mode_set = 1; // 1为遥控模式
     }
 
-    if (shoot_control_data.darts_mode_set == 0)
-    {
-        shoot_mode_set->shoot_mode = FRIC_STOP;
-        // 临时测试条件值
-    }
     if (shoot_control_data.darts_mode_set == 1)
     {
         // 左开关向上拨启动摩擦轮

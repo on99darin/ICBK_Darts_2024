@@ -46,7 +46,7 @@ typedef enum
   FRIC_RUN,        // 摩擦轮开启状态
   FRIC_NO_CURRENT, // 摩擦轮无力状态
   READY_TO_TURN,   // 摩擦轮准备就绪
-  REFEREE_AUTO_RUN // 裁判发射模式
+  SHOOT_AUTO_RUN // 裁判发射模式
 } shoot_control_mode_e;
 
 // 发射机构数据结构体

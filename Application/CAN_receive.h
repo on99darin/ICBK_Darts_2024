@@ -31,7 +31,9 @@ typedef struct
 
 extern void CAN_cmd_shoot(int16_t fric_left, int16_t fric_right, int16_t push); // 发送发射机构电机控制电流CAN1
 
-extern void CAN_cmd_gimbal(int16_t yaw, int16_t turn); // 发送yaw轴、转盘电机控制电流CAN2(0x205、0x206)
+extern void CAN_cmd_yaw(int16_t yaw); // 发送yaw轴、转盘电机控制电流CAN2(0x205、0x206)
+
+extern void CAN_cmd_turn(int16_t turn);
 
 extern const motor_measure_t *get_right_fric_motor_measure_point(void); // 返回摩擦轮左电机 3508电机数据指针
 

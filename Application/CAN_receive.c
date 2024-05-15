@@ -108,19 +108,33 @@ void CAN_cmd_shoot(int16_t fric_left, int16_t fric_right, int16_t push)
     HAL_CAN_AddTxMessage(&hcan1, &can1_tx_message, can1_send_data, &send_mail_box);
 }
 
-// CAN2发送云台电机控制电流CAN2(转盘 0x205、yaw 0x206)
-void CAN_cmd_gimbal(int16_t turn, int16_t yaw)
+// CAN1发送云台电机控制电流CAN1(转盘 0x205、yaw 0x206)
+void CAN_cmd_turn(int16_t turn)
+{
+    uint32_t send_mail_box;
+    can1_tx_message.StdId = CAN_GIMBAL_ALL_ID;
+    can1_tx_message.IDE = CAN_ID_STD;
+    can1_tx_message.RTR = CAN_RTR_DATA;
+    can1_tx_message.DLC = 0x02;
+    can1_send_data[0] = (turn >> 8);
+    can1_send_data[1] = turn;
+    // CAN1频道发送
+    HAL_CAN_AddTxMessage(&hcan1, &can1_tx_message, can1_send_data, &send_mail_box);
+}
+
+// CAN1发送云台电机控制电流CAN1(转盘 0x205、yaw 0x206)
+void CAN_cmd_yaw(int16_t yaw)
 {
     uint32_t send_mail_box;
     can1_tx_message.StdId = CAN_GIMBAL_ALL_ID;
     can1_tx_message.IDE = CAN_ID_STD;
     can1_tx_message.RTR = CAN_RTR_DATA;
     can1_tx_message.DLC = 0x04;
-    can1_send_data[0] = (turn >> 8);
-    can1_send_data[1] = turn;
+    can1_send_data[0] = 0;
+    can1_send_data[1] = 0;
     can1_send_data[2] = (yaw >> 8);
     can1_send_data[3] = yaw;
-    // CAN2频道发送
+    // CAN1频道发送
     HAL_CAN_AddTxMessage(&hcan1, &can1_tx_message, can1_send_data, &send_mail_box);
 }
 

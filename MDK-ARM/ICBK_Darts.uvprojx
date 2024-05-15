@@ -1387,9 +1387,9 @@
               <FilePath>..\Task\yaw_task.c</FilePath>
             </File>
             <File>
-              <FileName>check_task.c</FileName>
+              <FileName>referee_task.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Task\check_task.c</FilePath>
+              <FilePath>..\Task\referee_task.c</FilePath>
             </File>
           </Files>
         </Group>

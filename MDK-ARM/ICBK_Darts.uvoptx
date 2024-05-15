@@ -749,8 +749,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Task\check_task.c</PathWithFileName>
-      <FilenameWithoutPath>check_task.c</FilenameWithoutPath>
+      <PathWithFileName>..\Task\referee_task.c</PathWithFileName>
+      <FilenameWithoutPath>referee_task.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
