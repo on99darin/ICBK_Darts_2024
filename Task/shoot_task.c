@@ -24,7 +24,13 @@ void shoot_init(void);                                                   // 发�
 void shoot_feedback_update(shoot_control_data_t *shoot_feedback_update); // 发射数据反馈更新
 void shoot_mode_set(shoot_control_data_t *shoot_mode_set);               // 发射机构状态机设置
 void shoot_control_loop(void);                                           // 发射控制
-void push_limit_control(void);                                           // push电机推动扫描限位
+void push_limit_control(void);
+
+// 映射函数，将编码器的值（0~8191）转换为弧度制的角度值（-PI~PI）
+double msp(double x, double in_min, double in_max, double out_min, double out_max)
+{
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
 
 /**
  * @brief          发射机构初始化
@@ -38,24 +44,35 @@ void shoot_init(void)
     const fp32 fric_right_speed_pid[3] = {FRIC_RIGHT_SPEED_KP, FRIC_RIGHT_SPEED_KI, FRIC_RIGHT_SPEED_KD};
     // 推杆电机PID参数
     const fp32 push_motor_speed_pid[3] = {PUSH_SPEED_KP, PUSH_SPEED_KI, PUSH_SPEED_KD};
-
+    // 转盘位置环PID参数
+    const fp32 push_turn_position_pid[3] = {TURN_POSITION_KP, TURN_POSITION_KI, TURN_POSITION_KD};
+    // 转盘速度环PID参数
+    const fp32 push_turn_speed_pid[3] = {TURN_SPEED_KP, TURN_SPEED_KI, TURN_SPEED_KD};
     // 摩擦轮速度环PID初始化
     pid_init(&shoot_control_data.fric_left_pid, fric_left_speed_pid, FRIC_LEFT_SPEED_MAX_OUT, FRIC_LEFT_SPEED_MAX_IOUT);
     pid_init(&shoot_control_data.fric_right_pid, fric_right_speed_pid, FRIC_RIGHT_SPEED_MAX_OUT, FRIC_RIGHT_SPEED_MAX_IOUT);
     // 推杆速度环PID初始化
     pid_init(&shoot_control_data.push_motor_pid, push_motor_speed_pid, PUSH_SPEED_MAX_OUT, PUSH_SPEED_MAX_IOUT);
-
+    /*转盘电机PID初始化*/
+    // 转盘位置环PID初始化
+    pid_init(&shoot_control_data.turn_position_pid, push_turn_position_pid, TURN_POSITION_MAX_OUT, TURN_POSITION_MAX_IOUT);
+    // 转盘速度环PID初始化
+    pid_init(&shoot_control_data.turn_speed_pid, push_turn_speed_pid, TURN_SPEED_MAX_OUT, TURN_SPEED_MAX_IOUT);
     // 摩擦轮电机数据指针绑定
     shoot_control_data.shoot_fric_left_motor = get_left_fric_motor_measure_point();
     shoot_control_data.shoot_fric_right_motor = get_right_fric_motor_measure_point();
     // 推杆电机数据指针绑定
     shoot_control_data.push_motor = get_push_motor_measure_point();
-
-    // 状态初始化设定
-    shoot_control_data.shoot_mode = FRIC_STOP;
-
+    // 转盘电机数据指针绑定
+    shoot_control_data.turn_motor_measure = get_turn_motor_measure_point();
     // 遥控器指针绑定
     shoot_control_data.shoot_rc = get_remote_control_point();
+    // 状态初始化设定
+    shoot_control_data.shoot_mode = FRIC_STOP;
+    // 转盘电机初始位
+    // shoot_control_data.turn_target_angle = TURN_INIT_ANGLE;
+    // TURN电机发射次数初始化
+    shoot_control_data.turn_motor_time = 0;
 }
 
 /**
@@ -81,6 +98,8 @@ void shoot_feedback_update(shoot_control_data_t *shoot_feedback_update)
     shoot_feedback_update->fric_right_ref_speed = shoot_control_data.shoot_fric_right_motor->speed_rpm * (-FRIC_M3508_RATE_OF_ANGULAR_VELOCITY_TO_LINEAR_VELOCITY);
     // 推杆电机转子速度更新
     shoot_feedback_update->push_motor_ref_speed = shoot_control_data.push_motor->speed_rpm;
+    // TURN电机使用PI[0-2*PI]
+    shoot_control_data.turn_motor_ref_angle = msp(shoot_control_data.turn_motor_measure->ecd, 0, 8191, 0, 2 * PI);
     // 推杆--遥控器速度数据更新
     shoot_feedback_update->push_get_rc_speed = shoot_control_data.shoot_rc->rc.ch[3];
     // PUSH电机微动限位扫描
@@ -176,6 +195,11 @@ void shoot_control_loop(void)
         shoot_control_data.fric_right_given_current = (int16_t)pid_calc(&shoot_control_data.fric_right_pid, shoot_control_data.fric_right_ref_speed, shoot_control_data.fric_set_speed);
         // 推杆M2006闭环计算
         shoot_control_data.push_motor_given_current = (int16_t)pid_calc(&shoot_control_data.push_motor_pid, shoot_control_data.push_motor_ref_speed, shoot_control_data.push_set_speed);
+        // 转盘角度环计算
+        shoot_control_data.turn_inner_out = (int16_t)pid_calc(&shoot_control_data.turn_position_pid, shoot_control_data.turn_motor_ref_angle, shoot_control_data.turn_target_angle);
+        // yaw_control_data.turn_inner_out = 60;
+        //  转盘速度环计算
+        shoot_control_data.turn_motor_given_current = (int16_t)pid_calc(&shoot_control_data.turn_speed_pid, shoot_control_data.turn_motor_measure->speed_rpm, shoot_control_data.turn_inner_out);
     }
 }
 
