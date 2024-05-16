@@ -137,7 +137,7 @@ void shoot_mode_set(shoot_control_data_t *shoot_mode_set)
         // 左开关下拨发射机构无力
         if (shoot_control_data.shoot_rc->rc.s[1] == 0x02)
         {
-            shoot_mode_set->shoot_mode = FRIC_NO_CURRENT;
+            shoot_mode_set->shoot_mode = SHOOT_NO_CURRENT;
         }
     }
     // 挡位数据更新
@@ -156,7 +156,7 @@ void shoot_control_loop(void)
     // 摩擦轮数据反馈更新
     shoot_feedback_update(&shoot_control_data);
     // 判断状态机是否为无力状态
-    if (shoot_control_data.shoot_mode == FRIC_NO_CURRENT)
+    if (shoot_control_data.shoot_mode == SHOOT_NO_CURRENT)
     {
         // 摩擦轮发送电流为0
         shoot_control_data.fric_left_given_current = 0;
@@ -176,13 +176,51 @@ void shoot_control_loop(void)
             shoot_control_data.fric_set_speed = FRIC_STOP_SPEED;
             shoot_control_data.push_set_speed = PUSH_STOP_SPEED;
         }
-        /* 状态机为摩擦轮运行时，摩擦轮运行，左边4通道推杆控制2006速度 */
+        /* 状态机为摩擦轮运行时，摩擦轮运行，左边4通道推杆控制3508速度 */
         if (shoot_control_data.shoot_mode == FRIC_RUN)
         {
-
-            /*调试速度
             // 摩擦轮的速度设定
             shoot_control_data.fric_set_speed = FRIC_TARGGET_SPEED;
+            /*
+            // 更新目标角度，平衡对角发射
+            if (shoot_control_data.turn_mode == TURN_GO)
+            {
+                switch (shoot_control_data.turn_motor_time)
+                {
+                case 0:
+                {
+                    shoot_control_data.turn_target_angle += PI;
+                    shoot_control_data.turn_motor_time = 1;
+                    break;
+                }
+
+                case 1:
+                {
+                    shoot_control_data.turn_target_angle += PI / 2;
+                    shoot_control_data.turn_motor_time = 2;
+                    break;
+                }
+                case 2:
+                {
+                    shoot_control_data.turn_target_angle -= PI;
+                    shoot_control_data.turn_motor_time = 3;
+                    break;
+                }
+                case 3:
+                {
+                    shoot_control_data.turn_target_angle = TURN_INIT_ANGLE;
+                    shoot_control_data.turn_motor_time = 0;
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
+                }
+                shoot_control_data.turn_mode = TURN_OVER;
+            }
+            */
+            /*调试速度
             // 推杆电机的速度设定
             shoot_control_data.push_set_speed = -(shoot_control_data.push_get_rc_speed * 15);
             // 下微动开关限位

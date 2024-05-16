@@ -1,6 +1,6 @@
 /**
   * @file       yaw_task.c/h
-  * @brief      飞镖yaw轴任务，yaw电机
+  * @brief      飞镖yaw轴任务
   * @note
   * @history
   *  Version    Date            Author          Modification
@@ -76,43 +76,6 @@ void yaw_control_loop(void)
     }
     else
     {
-        // 更新目标角度，平衡对角发射
-        if (yaw_control_data.yaw_mode == TURN_GO)
-        {
-            switch (yaw_control_data.turn_motor_time)
-            {
-            case 0:
-            {
-                yaw_control_data.turn_target_angle += PI;
-                yaw_control_data.turn_motor_time = 1;
-                break;
-            }
-
-            case 1:
-            {
-                yaw_control_data.turn_target_angle += PI / 2;
-                yaw_control_data.turn_motor_time = 2;
-                break;
-            }
-            case 2:
-            {
-                yaw_control_data.turn_target_angle -= PI;
-                yaw_control_data.turn_motor_time = 3;
-                break;
-            }
-            case 3:
-            {
-                yaw_control_data.turn_target_angle = TURN_INIT_ANGLE;
-                yaw_control_data.turn_motor_time = 0;
-                break;
-            }
-            default:
-            {
-                break;
-            }
-            }
-            yaw_control_data.yaw_mode = TURN_OVER;
-        }
         // yaw角度环计算
         yaw_control_data.yaw_inner_out = (int16_t)pid_calc(&yaw_control_data.yaw_position_pid, yaw_control_data.yaw_motor_ref_angle, yaw_control_data.yaw_target_angle);
         // yaw速度环计算
@@ -126,6 +89,10 @@ void yaw_mode_set(yaw_control_data_t *yaw_mode_set)
     if (yaw_mode_set->yaw_mode == YAW_UNLOCK && yaw_control_data.yaw_rc->rc.s[0] == 0x01)
     {
         yaw_mode_set->yaw_mode = YAW_LOCK;
+    }
+    else
+    {
+        yaw_mode_set->yaw_mode = YAW_UNLOCK;
     }
 }
 

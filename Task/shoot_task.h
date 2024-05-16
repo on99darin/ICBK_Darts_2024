@@ -59,19 +59,28 @@ void shoot_task(void const *argument);
 // 状态模式列表
 typedef enum
 {
-	FRIC_STOP,		 // 摩擦轮停止状态
-	FRIC_RUN,		 // 摩擦轮开启状态
-	FRIC_NO_CURRENT, // 摩擦轮无力状态
-	READY_TO_TURN,	 // 摩擦轮准备就绪
-	SHOOT_AUTO_RUN	 // 裁判发射模式
+	FRIC_STOP,		  // 摩擦轮停止状态
+	FRIC_RUN,		  // 摩擦轮开启状态
+	SHOOT_NO_CURRENT, // 无力状态
+	SHOOT_AUTO_RUN	  // 裁判数据发射模式
 } shoot_control_mode_e;
+// 转盘与推弹状态模式列表
+typedef enum
+{
+	TURN_GO,	// 切换飞镖
+	TURN_OVER,	// 切换完毕
+	PUSH_UP,	// 推飞镖
+	PUSH_DOWN,	// 退杆
+	SHOOT_OVER, // 发射完毕
+	SHOOT_READY // 发射准备
+} turn_control_mode_e;
 
 // 发射机构数据结构体
 typedef struct
 {
 	shoot_control_mode_e shoot_mode; // 发射机构状态机
-
-	const RC_ctrl_t *shoot_rc; // 遥控器数据
+	turn_control_mode_e turn_mode;	 // 推弹与转盘状态机
+	const RC_ctrl_t *shoot_rc;		 // 遥控器数据
 
 	const motor_measure_t *shoot_fric_left_motor;  // 左摩擦轮电机数据
 	const motor_measure_t *shoot_fric_right_motor; // 右摩擦轮电机数据
