@@ -35,7 +35,7 @@ void yaw_init(void)
     // yaw速度环PID参数
     const fp32 gimbal_yaw_speed_pid[3] = {YAW_SPEED_KP, YAW_SPEED_KI, YAW_SPEED_KD};
 
-    /* 转盘PID初始化 */
+    /* YAW电机PID初始化 */
     // yaw位置环PID初始化
     pid_init(&yaw_control_data.yaw_position_pid, gimbal_yaw_position_pid, YAW_POSITION_MAX_OUT, YAW_POSITION_MAX_IOUT);
     // yaw速度环PID初始化
@@ -47,7 +47,7 @@ void yaw_init(void)
     // YAW电机初始位
     yaw_control_data.yaw_target_angle = 3825.0f;
     // 状态机初始位
-    yaw_control_data.yaw_mode = TURN_READY;
+    yaw_control_data.yaw_mode = YAW_LOCK;
 }
 
 void yaw_feedback_update(yaw_control_data_t *yaw_feedback_update)
@@ -117,44 +117,15 @@ void yaw_control_loop(void)
         yaw_control_data.yaw_inner_out = (int16_t)pid_calc(&yaw_control_data.yaw_position_pid, yaw_control_data.yaw_motor_ref_angle, yaw_control_data.yaw_target_angle);
         // yaw速度环计算
         yaw_control_data.yaw_motor_given_current = (int16_t)pid_calc(&yaw_control_data.yaw_speed_pid, yaw_control_data.yaw_motor_measure->speed_rpm, yaw_control_data.yaw_inner_out);
-        // 左下拨动
-        if (yaw_control_data.yaw_mode == YAW_UNLOCK)
-        {
-            CAN_cmd_gimbal(0, yaw_control_data.yaw_motor_given_current);
-        }
-        else
-        {
-            CAN_cmd_gimbal(yaw_control_data.turn_motor_given_current, yaw_control_data.yaw_motor_given_current);
-        }
+        CAN_cmd_yaw(yaw_control_data.yaw_motor_given_current);
     }
 }
 
 void yaw_mode_set(yaw_control_data_t *yaw_mode_set)
 {
-    // 右开关向上拨转一圈
-    if (yaw_mode_set->yaw_mode == TURN_READY && yaw_control_data.yaw_rc->rc.s[0] == 0x01)
+    if (yaw_mode_set->yaw_mode == YAW_UNLOCK && yaw_control_data.yaw_rc->rc.s[0] == 0x01)
     {
-        yaw_mode_set->yaw_mode = TURN_GO;
-    }
-    // 右开关从上向中拨回到就绪状态
-    if (yaw_mode_set->yaw_mode == TURN_OVER && yaw_control_data.yaw_rc->rc.s[0] == 0x03)
-    {
-        yaw_mode_set->yaw_mode = TURN_READY;
-    }
-    // 左开关向下拨，YAW轴解锁
-    if (yaw_mode_set->yaw_mode == yaw_control_data.yaw_rc->rc.s[1] == 0x02)
-    {
-        yaw_mode_set->yaw_mode = YAW_UNLOCK;
-    }
-    // 右开关向下拨，裁判自动发射模式
-    if (yaw_mode_set->yaw_mode == yaw_control_data.yaw_rc->rc.s[0] == 0x02)
-    {
-        yaw_mode_set->yaw_mode = YAW_AUTO_RUN;
-    }
-    // 左开关从下往中拨
-    if (yaw_mode_set->yaw_mode == YAW_UNLOCK && yaw_control_data.yaw_rc->rc.s[1] == 0x03)
-    {
-        yaw_mode_set->yaw_mode = TURN_READY;
+        yaw_mode_set->yaw_mode = YAW_LOCK;
     }
 }
 

@@ -99,7 +99,7 @@ void shoot_feedback_update(shoot_control_data_t *shoot_feedback_update)
     // 推杆电机转子速度更新
     shoot_feedback_update->push_motor_ref_speed = shoot_control_data.push_motor->speed_rpm;
     // TURN电机使用PI[0-2*PI]
-    shoot_control_data.turn_motor_ref_angle = msp(shoot_control_data.turn_motor_measure->ecd, 0, 8191, 0, 2 * PI);
+    shoot_feedback_update->turn_motor_ref_angle = msp(shoot_control_data.turn_motor_measure->ecd, 0, 8191, 0, 2 * PI);
     // 推杆--遥控器速度数据更新
     shoot_feedback_update->push_get_rc_speed = shoot_control_data.shoot_rc->rc.ch[3];
     // PUSH电机微动限位扫描
@@ -161,6 +161,10 @@ void shoot_control_loop(void)
         // 摩擦轮发送电流为0
         shoot_control_data.fric_left_given_current = 0;
         shoot_control_data.fric_right_given_current = 0;
+        // 推弹电机发射电流为0
+        shoot_control_data.push_motor_given_current = 0;
+        // 转盘电机发射电流为0
+        shoot_control_data.turn_motor_given_current = 0;
     }
     else
     // 如果状态机不为无力状态，进行下面的判断
@@ -175,6 +179,8 @@ void shoot_control_loop(void)
         /* 状态机为摩擦轮运行时，摩擦轮运行，左边4通道推杆控制2006速度 */
         if (shoot_control_data.shoot_mode == FRIC_RUN)
         {
+
+            /*调试速度
             // 摩擦轮的速度设定
             shoot_control_data.fric_set_speed = FRIC_TARGGET_SPEED;
             // 推杆电机的速度设定
@@ -189,16 +195,16 @@ void shoot_control_loop(void)
             {
                 shoot_control_data.push_set_speed = PUSH_STOP_SPEED;
             }
+            */
         }
         // 摩擦轮M3508闭环计算
         shoot_control_data.fric_left_given_current = (int16_t)pid_calc(&shoot_control_data.fric_left_pid, shoot_control_data.fric_left_ref_speed, shoot_control_data.fric_set_speed);
         shoot_control_data.fric_right_given_current = (int16_t)pid_calc(&shoot_control_data.fric_right_pid, shoot_control_data.fric_right_ref_speed, shoot_control_data.fric_set_speed);
-        // 推杆M2006闭环计算
+        // 推杆M3508闭环计算
         shoot_control_data.push_motor_given_current = (int16_t)pid_calc(&shoot_control_data.push_motor_pid, shoot_control_data.push_motor_ref_speed, shoot_control_data.push_set_speed);
         // 转盘角度环计算
         shoot_control_data.turn_inner_out = (int16_t)pid_calc(&shoot_control_data.turn_position_pid, shoot_control_data.turn_motor_ref_angle, shoot_control_data.turn_target_angle);
-        // yaw_control_data.turn_inner_out = 60;
-        //  转盘速度环计算
+        // 转盘速度环计算
         shoot_control_data.turn_motor_given_current = (int16_t)pid_calc(&shoot_control_data.turn_speed_pid, shoot_control_data.turn_motor_measure->speed_rpm, shoot_control_data.turn_inner_out);
     }
 }

@@ -39,9 +39,9 @@
 // 状态模式列表
 typedef enum
 {
-    TURN_READY;
-}
-yaw_control_mode_e;
+    YAW_LOCK,
+    YAW_UNLOCK
+}yaw_control_mode_e;
 
 typedef struct
 {
