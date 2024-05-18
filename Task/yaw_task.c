@@ -74,25 +74,22 @@ void yaw_control_loop(void)
             yaw_control_data.yaw_target_angle = 2050;
         }
     }
-    else
-    {
-        // yaw角度环计算
-        yaw_control_data.yaw_inner_out = (int16_t)pid_calc(&yaw_control_data.yaw_position_pid, yaw_control_data.yaw_motor_ref_angle, yaw_control_data.yaw_target_angle);
-        // yaw速度环计算
-        yaw_control_data.yaw_motor_given_current = (int16_t)pid_calc(&yaw_control_data.yaw_speed_pid, yaw_control_data.yaw_motor_measure->speed_rpm, yaw_control_data.yaw_inner_out);
-        CAN_cmd_yaw(yaw_control_data.yaw_motor_given_current);
-    }
+    // yaw角度环计算
+    yaw_control_data.yaw_inner_out = (int16_t)pid_calc(&yaw_control_data.yaw_position_pid, yaw_control_data.yaw_motor_ref_angle, yaw_control_data.yaw_target_angle);
+    // yaw速度环计算
+    yaw_control_data.yaw_motor_given_current = (int16_t)pid_calc(&yaw_control_data.yaw_speed_pid, yaw_control_data.yaw_motor_measure->speed_rpm, yaw_control_data.yaw_inner_out);
+    CAN_cmd_yaw(yaw_control_data.yaw_motor_given_current);
 }
 
 void yaw_mode_set(yaw_control_data_t *yaw_mode_set)
 {
-    if (yaw_mode_set->yaw_mode == YAW_UNLOCK && yaw_control_data.yaw_rc->rc.s[0] == 0x01)
+    if (yaw_mode_set->yaw_mode == YAW_LOCK && yaw_control_data.yaw_rc->rc.s[1] == 0x02)
     {
-        yaw_mode_set->yaw_mode = YAW_LOCK;
+        yaw_mode_set->yaw_mode = YAW_UNLOCK;
     }
     else
     {
-        yaw_mode_set->yaw_mode = YAW_UNLOCK;
+        yaw_mode_set->yaw_mode = YAW_LOCK;
     }
 }
 

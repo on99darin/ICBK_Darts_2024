@@ -67,10 +67,12 @@ void shoot_init(void)
     shoot_control_data.turn_motor_measure = get_turn_motor_measure_point();
     // 遥控器指针绑定
     shoot_control_data.shoot_rc = get_remote_control_point();
-    // 状态初始化设定
+    // 摩擦轮状态初始化设定
     shoot_control_data.shoot_mode = FRIC_STOP;
+    // 转盘推杆状态初始化设定
+    shoot_control_data.turn_mode = SHOOT_WAITE;
     // 转盘电机初始位
-    // shoot_control_data.turn_target_angle = TURN_INIT_ANGLE;
+    shoot_control_data.turn_target_angle = TURN_INIT_ANGLE;
     // TURN电机发射次数初始化
     shoot_control_data.turn_motor_time = 0;
 }
