@@ -67,13 +67,14 @@ typedef enum
 // 转盘与推弹状态模式列表
 typedef enum
 {
-	TURN_GO,	 // 切换飞镖
-	TURN_OVER,	 // 切换完毕
-	PUSH_UP,	 // 推飞镖
-	PUSH_DOWN,	 // 退杆
-	SHOOT_WAITE, // 等待发射
-	SHOOT_OVER,	 // 发射完毕
-	SHOOT_READY	 // 发射准备
+	TURN_GO,		 // 切换飞镖
+	TURN_OVER,		 // 切换完毕
+	PUSH_UP,		 // 推飞镖
+	PUSH_DOWN_READY, // 退杆准备
+	PUSH_DOWN,		 // 退杆中
+	SHOOT_WAITE,	 // 等待发射
+	SHOOT_OVER,		 // 发射完毕
+	SHOOT_READY		 // 发射准备
 } turn_control_mode_e;
 
 // 发射机构数据结构体

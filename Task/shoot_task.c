@@ -23,7 +23,8 @@ shoot_control_data_t shoot_control_data; // 发射机构全局数据
 void shoot_init(void);                                                   // 发射机构初始化
 void shoot_feedback_update(shoot_control_data_t *shoot_feedback_update); // 发射数据反馈更新
 void shoot_mode_set(shoot_control_data_t *shoot_mode_set);               // 发射机构状态机设置
-void shoot_control_loop(void);                                           // 发射控制
+void turn_mode_set(shoot_control_data_t *turn_mode_set);
+void shoot_control_loop(void); // 发射控制
 void push_limit_control(void);
 
 // 映射函数，将编码器的值（0~8191）转换为弧度制的角度值（-PI~PI）
@@ -75,6 +76,8 @@ void shoot_init(void)
     shoot_control_data.turn_target_angle = TURN_INIT_ANGLE;
     // TURN电机发射次数初始化
     shoot_control_data.turn_motor_time = 0;
+    // PUSH电机微动限位扫描
+    push_limit_control();
 }
 
 /**
@@ -130,6 +133,7 @@ void shoot_mode_set(shoot_control_data_t *shoot_mode_set)
         if (shoot_mode_set->shoot_mode == FRIC_STOP && shoot_control_data.shoot_rc->rc.s[1] == 0x01)
         {
             shoot_mode_set->shoot_mode = FRIC_RUN;
+            shoot_control_data.turn_mode = SHOOT_READY;
         }
         // 左开关中间档闭环停摩擦轮
         if (shoot_control_data.shoot_rc->rc.s[1] == 0x03)
@@ -142,8 +146,16 @@ void shoot_mode_set(shoot_control_data_t *shoot_mode_set)
             shoot_mode_set->shoot_mode = SHOOT_NO_CURRENT;
         }
     }
-    // 挡位数据更新
-    // shoot_mode_set->last_switch = shoot_mode_set->shoot_rc->rc.s[1];
+}
+void turn_mode_set(shoot_control_data_t *turn_mode_set)
+{
+    if (shoot_control_data.darts_mode_set == 1)
+    {
+        if (turn_mode_set->shoot_mode == SHOOT_WAITE && shoot_control_data.shoot_rc->rc.s[0] == 0x01)
+        {
+            shoot_control_data.turn_mode = SHOOT_READY;
+        }
+    }
 }
 
 /**
@@ -183,7 +195,37 @@ void shoot_control_loop(void)
         {
             // 摩擦轮的速度设定
             shoot_control_data.fric_set_speed = FRIC_TARGGET_SPEED;
-            /*
+            // 遥控器控制自动发射信号
+            if (shoot_control_data.turn_mode == SHOOT_READY)
+            {
+                shoot_control_data.push_set_speed = -1000;
+                shoot_control_data.turn_mode = PUSH_UP;
+            }
+            if (shoot_control_data.turn_mode == PUSH_UP)
+            {
+                if (shoot_control_data.push_up_flag == 0)
+                {
+                    shoot_control_data.push_set_speed = 0;
+                    shoot_control_data.turn_mode = PUSH_DOWN_READY;
+                }
+            }
+            if (shoot_control_data.turn_mode == PUSH_DOWN_READY)
+            {
+                shoot_control_data.push_set_speed = 1000;
+                shoot_control_data.turn_mode = PUSH_DOWN;
+            }
+            if (shoot_control_data.turn_mode == PUSH_DOWN)
+            {
+                if (shoot_control_data.push_down_flag == 0)
+                {
+                    shoot_control_data.push_set_speed = 0;
+                    shoot_control_data.turn_mode = SHOOT_OVER;
+                }
+            }
+            if (shoot_control_data.turn_mode == SHOOT_OVER)
+            {
+                shoot_control_data.turn_mode = TURN_GO;
+            }
             // 更新目标角度，平衡对角发射
             if (shoot_control_data.turn_mode == TURN_GO)
             {
@@ -221,7 +263,10 @@ void shoot_control_loop(void)
                 }
                 shoot_control_data.turn_mode = TURN_OVER;
             }
-            */
+            if (shoot_control_data.turn_mode == TURN_OVER)
+            {
+                shoot_control_data.turn_mode = SHOOT_WAITE;
+            }
             /*调试速度
             // 推杆电机的速度设定
             shoot_control_data.push_set_speed = -(shoot_control_data.push_get_rc_speed * 15);
