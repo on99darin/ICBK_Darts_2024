@@ -21,7 +21,7 @@
 #define YAW_SPEED_MAX_IOUT 2000.0f
 
 /* yaw角度环PID */
-#define YAW_POSITION_KP 1.0f
+#define YAW_POSITION_KP 5.0f
 #define YAW_POSITION_KI 0.0f
 #define YAW_POSITION_KD 0.1f
 #define YAW_POSITION_MAX_OUT 500.0f

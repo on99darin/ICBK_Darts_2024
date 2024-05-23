@@ -133,7 +133,6 @@ void shoot_mode_set(shoot_control_data_t *shoot_mode_set)
         if (shoot_mode_set->shoot_mode == FRIC_STOP && shoot_control_data.shoot_rc->rc.s[1] == 0x01)
         {
             shoot_mode_set->shoot_mode = FRIC_RUN;
-            shoot_control_data.turn_mode = SHOOT_READY;
         }
         // 左开关中间档闭环停摩擦轮
         if (shoot_control_data.shoot_rc->rc.s[1] == 0x03)
@@ -151,7 +150,7 @@ void turn_mode_set(shoot_control_data_t *turn_mode_set)
 {
     if (shoot_control_data.darts_mode_set == 1)
     {
-        if (turn_mode_set->shoot_mode == SHOOT_WAITE && shoot_control_data.shoot_rc->rc.s[0] == 0x01)
+        if (shoot_control_data.turn_mode == SHOOT_WAITE && shoot_control_data.shoot_rc->rc.s[0] == 0x01)
         {
             shoot_control_data.turn_mode = SHOOT_READY;
         }
@@ -167,6 +166,7 @@ void shoot_control_loop(void)
 {
     // 发射机构状态机设置
     shoot_mode_set(&shoot_control_data);
+	turn_mode_set(&shoot_control_data);
     // 摩擦轮数据反馈更新
     shoot_feedback_update(&shoot_control_data);
     // 判断状态机是否为无力状态
@@ -198,7 +198,7 @@ void shoot_control_loop(void)
             // 遥控器控制自动发射信号
             if (shoot_control_data.turn_mode == SHOOT_READY)
             {
-                shoot_control_data.push_set_speed = -1000;
+                shoot_control_data.push_set_speed = -10000;
                 shoot_control_data.turn_mode = PUSH_UP;
             }
             if (shoot_control_data.turn_mode == PUSH_UP)
@@ -211,7 +211,7 @@ void shoot_control_loop(void)
             }
             if (shoot_control_data.turn_mode == PUSH_DOWN_READY)
             {
-                shoot_control_data.push_set_speed = 1000;
+                shoot_control_data.push_set_speed = 12000;
                 shoot_control_data.turn_mode = PUSH_DOWN;
             }
             if (shoot_control_data.turn_mode == PUSH_DOWN)
@@ -308,7 +308,8 @@ void shoot_task(void const *argument)
         // 发射控制刷新
         shoot_control_loop();
         // 发送电流
-        CAN_cmd_shoot(shoot_control_data.fric_left_given_current, shoot_control_data.fric_right_given_current, shoot_control_data.push_motor_given_current);
+        CAN_cmd_shoot(shoot_control_data.fric_left_given_current, shoot_control_data.fric_right_given_current,shoot_control_data.push_motor_given_current);
+		//CAN_cmd_turn(shoot_control_data.turn_motor_given_current);
         //  等待接收数据刷新，避免刷新速度过快
         vTaskDelay(1);
     }

@@ -21,6 +21,7 @@
 #include "shoot_task.h"
 
 yaw_control_data_t yaw_control_data;                               // 全局数据
+extern shoot_control_data_t shoot_control_data;
 void yaw_init(void);                                               // yaw与turn电机初始化
 void yaw_feedback_update(yaw_control_data_t *yaw_feedback_update); // yaw数据反馈更新
 void yaw_control_loop(void);                                       // 电机控制
@@ -78,7 +79,7 @@ void yaw_control_loop(void)
     yaw_control_data.yaw_inner_out = (int16_t)pid_calc(&yaw_control_data.yaw_position_pid, yaw_control_data.yaw_motor_ref_angle, yaw_control_data.yaw_target_angle);
     // yaw速度环计算
     yaw_control_data.yaw_motor_given_current = (int16_t)pid_calc(&yaw_control_data.yaw_speed_pid, yaw_control_data.yaw_motor_measure->speed_rpm, yaw_control_data.yaw_inner_out);
-    CAN_cmd_yaw(yaw_control_data.yaw_motor_given_current);
+    CAN_cmd_6020(shoot_control_data.turn_motor_given_current,yaw_control_data.yaw_motor_given_current);
 }
 
 void yaw_mode_set(yaw_control_data_t *yaw_mode_set)
